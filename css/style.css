@@ -180,92 +180,12 @@ ul, li {
 /*------------------------------------------------------------------
  # sidenav/navbar style
 -------------------------------------------------------------------*/
-
-
-.sidenav .navbar-brand img {
-  max-width: 150px;
-}
-@media (max-width: 991px) {
-  .sidenav .navbar-brand img {
-    max-width: 120px;
-  }
-}
-@media (max-width: 767px) {
-  .sidenav .navbar-brand img {
-    max-width: 100px;
-  }
-}
-.sidenav .nav-link {
-  font-size: 20px;
+.nav-link {
+  font-size: 33px;
   position: relative;
   display: inline-block;
 }
-.sidenav .nav-link::after {
-  position: absolute;
-  content: "";
-  height: 2px;
-  width: 0;
-  background-color: #ffffff;
-  left: 0;
-  bottom: 13px;
-  transition: 0.3s;
-}
-.sidenav .nav-link:hover {
-  color: rgba(255, 255, 255, 0.5) !important;
-}
-.sidenav .nav-link:hover::after {
-  width: 15px;
-}
-.sidenav .nav-link[aria-expanded=true],
-.sidenav .active .nav-link {
-  color: rgba(255, 255, 255, 0.5) !important;
-}
-.sidenav .nav-link[aria-expanded=true]::after,
-.sidenav .active .nav-link::after {
-  width: 15px;
-}
-.sidenav select {
-  background: url(../images/chevron-down.svg) no-repeat right 0.5rem center/15px 17px;
-  border: 1px solid #ffffff !important;
-  height: 30px;
-  padding: 0 28px 0 10px;
-  width: 80px;
-  background-size: 14px;
-}
-.sidenav select:focus {
-  border: 1px solid #ffffff !important;
-}
-.sidenav select option {
-  background-color: #1D1C21;
-}
 
-@media (max-width: 767px) {
-  .mobile-nav {
-    display: block;
-  }
-}
-.mobile-nav img {
-  width: 120px;
-}
-@media (max-width: 767px) {
-  .mobile-nav img {
-    width: 100px;
-  }
-}
-.mobile-nav .nav-toggle {
-  width: 40px;
-  height: 40px;
-  font-size: 13px;
-  padding-top: 3px;
-  border-radius: 50px;
-}
-.mobile-nav .nav-toggle.show .show,
-.mobile-nav .nav-toggle .hidden {
-  display: none;
-}
-.mobile-nav .nav-toggle.show .hidden {
-  display: block;
-}
 
 .nav-toggle-overlay {
   position: fixed;

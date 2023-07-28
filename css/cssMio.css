@@ -5,12 +5,24 @@ body {
 
 .card-body {
     /* background-color: #ab4f4f; */
-    color:#ffffff;    
+    /* color:#ffffff;     */
+    color:#505152;    
 }
 
 
+#uni {
+    /* font-size: larger; */
+    font-size: 25px;
+    color: #6e6d79;
+    font-weight: bold;
+}
+#euro {
+    /* font-size: larger; */
+    font-size: 25px;
+    color: #2b1f99;
+    font-weight: bold;
+}
 
-/* SE CON L HOVER SULLE CARD AUMENTO LA IDMENSIONE, HO PROBLEMI CON IL Z INDEX */
 
 /* card hover, card selezionabile sono quelle su cui posso cliccarci sopra, voglio l hover solo per quelle */
 .cardSelezionabile:hover{
@@ -28,26 +40,10 @@ body {
 
 
 
-
-
-
-
-
-
-
-#rosso {
-    /* background-color: #19085e; */
-  background-color: #E4112F;
-}
-#rosso:hover {
-    /* background-color: rgba(176, 10, 10, 0.865); */
-  background-color: rgba(228, 17, 47, 0.7);
-
-}
-
 /* mi dava di default il colore grigio scuro altrimenti (forse per l altro foglio css?) */
 h2, h6{
-    color:#ffffff;
+    /* color:#ffffff; */
+    color:#424141;
 }
 
 /* questa classe serve solo per aggiungere un poco di spazio sopra l elemento */
