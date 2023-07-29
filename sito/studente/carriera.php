@@ -64,26 +64,25 @@ esami svolti, in quale data e qual'è il voto e i cfu ottenuti per esame -->
                         $pdo = require 'C:\xampp\htdocs\unimia\scripts\connessioneDatabase.php';
                         
                         // prendo la matricola dall email
-                        $query = 'SELECT s.matricola
+                        $query = "SELECT s.matricola
                         FROM unieuro.utenti AS u
                         INNER JOIN unieuro.studenti AS s ON s.utente = u.id
-                        WHERE u.email = \'mattia.delledonne@studenti.unimi.it\' ';
-                        $data = $pdo->query($query);
-                        // echo$data[0]['matricola'],"ciao";    // non si può fare perchè $data è un oggetto e non un array
-                        
-                        foreach($data as $row)  $matricola = $row['matricola']; // non serve avere il ciclo, le row sono 1 sola
-                        // echo$matricola;
-                        // echo "tipo della vavriabile ",  gettype($matricola);  // matricola è integer
+                        WHERE u.email = '{$_SESSION['email']}' ";
 
-                        $query = 'SELECT se.studentematricola , a.giorno , i.nome , i.cfu, se.voto -- per ora seleziono solo questo, potrei selezionare altro come l anno, cdl,... 
+
+                        $data = $pdo->query($query);
+                        
+                        foreach($data as $row)  $matricola = $row['matricola']; // non servirebbe il ciclo, le row sono 1 sola
+
+                        // se uso una $var nella query, ci vanno le "" e non le ''     bello
+                        $query = "SELECT se.studentematricola , a.giorno , i.nome , i.cfu, se.voto 
                         FROM unieuro.studentiesami  AS se
                         INNER JOIN unieuro.appelli AS a ON a.appello_id = se.appello_id  -- Joino il risultato con l appello 
                         INNER JOIN unieuro.insegnamenti AS i ON a.insegnamento_id = i.id -- e joino tutto con gli insegnamenti
-                        WHERE se.studentematricola = $matricola';      // 987180 è il parametro da cambiare in base allo studente
-                        $data = $pdo->query($query);    // qua ho messo pdo ma nell esempio c era connect
+                        WHERE se.studentematricola = $matricola";      
+                        $data = $pdo->query($query);    
                     
-                        foreach($data as $row) { 
-                            // print_r($row);
+                        foreach($data as $row) {   // ogni data è un esame
                             echo '<tr>
                             <td>',$row['nome'],'</td>
                             <td>',$row['voto'],'</td>
