@@ -12,11 +12,10 @@
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
     <!-- ora che l homepage è dentro la cartella, per recuperare il css metto tutto il path -->
-    <link href="http://localhost/css/cssMio.css" rel="stylesheet">
-    <link href="http://localhost/css/cssMio.css" rel="stylesheet">
+    <link href="http://localhost/unimia/css/cssMio.css" rel="stylesheet">
+    <link href="http://localhost/unimia/css/cssMio.css" rel="stylesheet">
 
 </head>
-
 
 
 <body >
@@ -65,8 +64,8 @@
                                         <div class="card-body">
                                             <h5 class="card-title">La mia carriera</h5>
                                             <img class="card-img    bg" src="https://www.vigilanzatv.it/wp-content/uploads/2021/01/The-Truman-Show-2.jpg" alt="Card image cap">
-                                            <a id="albumLink" class="stretched-link" title="Click to do something"
-                                                href="" action="risultati" method="GET">
+                                            <a id="albumLink" class="stretched-link" title="Carriera"
+                                                href="carriera.php" >
                                             </a>
                                         </div>
                                     </div>
