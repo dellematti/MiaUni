@@ -40,7 +40,7 @@
     </div>
 
     
-    <footer id="footer" class="container footer text-center" >
+    <footer id="footer" class="container footer text-center top-buffer-s" >
         <nav>
             <ul>
                 <li>
