@@ -37,8 +37,10 @@ if (isset($_POST["email"], $_POST["password"])) {   // controllo se ci sono emai
         echo "<br><br>email trovato: ", $row['email'];
         echo "<br>pswrd trovato: ", $row['pswrd'];
 
-        if ( $row['email'] == $_POST['email']  && $row['pswrd'] == $_POST['password'] ) $login = true;
-
+        if ( $row['email'] == $_POST['email']  && $row['pswrd'] == $_POST['password'] ) {
+            $login = true;
+            break;
+        }
     }
 
     echo "<br>login", $login ? 'true' : 'false';     // sta cosa perchè in php non si può stampare un boolean        bello
@@ -64,7 +66,7 @@ if (isset($_POST["email"], $_POST["password"])) {   // controllo se ci sono emai
     }else{
         // qua è il caso in cui il login non sia andato a buon fine
         // facciamo il redirect alla pagina di login di nuovo
-        header('Location: ../sito/login.php');
+        // header('Location: ../sito/login.php');
     }
 
 

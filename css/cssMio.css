@@ -10,6 +10,11 @@ body {
 }
 
 
+.widget {
+    background-color: rgb(129, 126, 207);
+    color:#e6e6e6;
+}
+
 #uni {
     /* font-size: larger; */
     font-size: 25px;
@@ -74,21 +79,20 @@ h2, h6{
 }
 
 
-#registrazione {
-
-    background-color: #121212;
-}
-
 
 
 
 
 /* PAGINA DEL LOGIN */
 
-#login {
+/* #login {
+    background-color: #c8d7be;
+} */
+
+/* #login {
     display: flex;
     justify-content: center;
-}
+} */
 
 /* main {
     display: flex;
