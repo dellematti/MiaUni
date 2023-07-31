@@ -11,12 +11,12 @@ $pdo = require 'connessioneDatabase.php';
 if ($pdo) {
     echo "Connected to the database successfully!";
 } 
-// start working with the database
 
-if (isset($_SESSION['isLogin'])) {     // sel utente è già loggato
-    // header('Location: dashboard.php');
-    exit;
-}
+// QUESTO LO DOVRO' RIMETTERE DOPO, ORA LO TOLGO PERCHE NON HO ANCORA FATTO IL LOGOUT QUINDI MI DA TRUE SEMPRE
+// if (isset($_SESSION['isLogin'])) {     // sel utente è già loggato
+//     // header('Location: dashboard.php');
+//     exit;
+// }
 
 
 if (isset($_POST["email"], $_POST["password"])) {   // controllo se ci sono email e password

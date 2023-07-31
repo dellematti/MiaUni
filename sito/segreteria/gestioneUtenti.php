@@ -57,7 +57,8 @@
                                 <h1 class="content-block-title clearfix" id="main-content">
                                     Aggiungi utente</h1>
                                 <br>
-                                    <form method="POST" action="aggiungiUtente.php">
+                                    <!-- <form method="POST" action="localhost/unimia/scripts/aggiungiUtente.php"> -->
+                                    <form method="POST" action="http://localhost/unimia/scripts/aggiungiUtente.php">
                                         <div class="form-group" >
                                             Inserisci le informazioni necessarie ad aggiungere un utente.
                                             <input id="nome"  class="form-control input-lg typeahead top-buffer-s" name="nome" type="text" class="form-control bg-transparent rounded-0 my-4" placeholder="Nome" 
