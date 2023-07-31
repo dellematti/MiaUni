@@ -14,6 +14,8 @@
     <!-- ora che l homepage è dentro la cartella, per recuperare il css metto tutto il path -->
     <link href="http://localhost/unimia/css/cssMio.css" rel="stylesheet">
     <!-- <link href="http://localhost/unimia/css/style.css" rel="stylesheet"> -->
+    <!-- <link href="http://localhost/unimia/css/cssLogin.css" rel="stylesheet"> -->
+
 
 </head>
 
@@ -64,7 +66,7 @@
                                         <div class="card-body">
                                             <h5 class="card-title">La mia carriera</h5>
                                             <img class="card-img    bg" src="https://www.vigilanzatv.it/wp-content/uploads/2021/01/The-Truman-Show-2.jpg" alt="Card image cap">
-                                            <a id="albumLink" class="stretched-link" title="Carriera"
+                                            <a id="carriera" class="stretched-link" title="Carriera"
                                                 href="carriera.php" >
                                             </a>
                                         </div>
@@ -75,8 +77,8 @@
                                         <div class="card-body">
                                             <h5 class="card-title">Informazioni utente</h5>
                                             <img class="card-img    bg" src="https://eyestudios.it/wp-content/uploads/2021/04/9-Consigli-per-Migliorare-lEsperienza-Utente-1024x629.jpg" alt="Card image cap">
-                                            <a id="albumLink" class="stretched-link" title="Click to do something"
-                                                href="" action="risultati" method="GET">
+                                            <a id="utente" class="stretched-link" title="Area utente"
+                                                href="areaUtente.php">
                                             </a>
                                             <!-- <a class="link text-white px-0 card-text second-link" href="">altro</a> -->
                                         </div>

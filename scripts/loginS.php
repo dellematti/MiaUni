@@ -13,7 +13,7 @@ if ($pdo) {
 } 
 // start working with the database
 
-if (isset($_SESSION['session_id'])) {     // sel utente è già loggato
+if (isset($_SESSION['isLogin'])) {     // sel utente è già loggato
     // header('Location: dashboard.php');
     exit;
 }
