@@ -38,9 +38,10 @@ if (isset($_POST["nome"], $_POST["cognome"], $_POST["tipoUtente"] )) {   // cont
         // echo"quanti : ",$row['count'], "<br>";
     }
 
-    
+    $nomeUtente = strtolower($_POST["nome"]);    
+    $cognomeUtente = strtolower($_POST["cognome"]);    
 
-    $email = $_POST["nome"] . '.' . $_POST["cognome"];
+    $email = $nomeUtente . '.' . $cognomeUtente;
     if($omonimi != 0) $email = $email . $omonimi;   //se esistono omonimi modifico l email aggiungendo il numero
     if ($_POST["tipoUtente"] == "Studente") $email = $email . "@studente.unimi.it";
     if ($_POST["tipoUtente"] == "Docente") $email = $email . "@docente.unimi.it";
@@ -78,21 +79,27 @@ if (isset($_POST["nome"], $_POST["cognome"], $_POST["tipoUtente"] )) {   // cont
         echo$_POST["cdl"],"<br>";
         echo$idUtente,"<br>";
 
-        $query = "BEGIN TRAN aggiungiStudente
-        INSERT INTO unieuro.utenti 
-        VALUES ({$idUtente}, '{$email}', '{$password}', '{$_POST['nome']}', '{$_POST['cognome']}')
-        INSERT INTO unieuro.studenti 
-        VALUES ({$matricola}, {$_POST['cdl']}, {$idUtente})           
-        COMMIT TRAN aggiungiStudente";
+        // ANDREBBE FATTO CON UNA TRANSACTION !!!
+        $query = "INSERT INTO unieuro.utenti 
+        VALUES ({$idUtente}, '{$email}', '{$password}', '{$nomeUtente}', '{$cognomeUtente}')";
         $data = $pdo->query($query); 
 
-        // e inserisco utente e studente al db
+        $query = "INSERT INTO unieuro.studenti 
+        VALUES ({$matricola}, {$_POST['cdl']}, {$idUtente})";
+        $data = $pdo->query($query); 
     }
 
     if ($_POST["tipoUtente"] == "Docente") {
         echo$idUtente,"<br>";
         echo$_POST["ufficio"],"<br>";
-        // e inserisco tutto nel database
+        
+        // anche qua servirebbe una transaction
+        $query = "INSERT INTO unieuro.utenti 
+        VALUES ({$idUtente}, '{$email}', '{$password}', '{$nomeUtente}', '{$cognomeUtente}')";
+        $data = $pdo->query($query); 
+        $query = "INSERT INTO unieuro.docenti 
+        VALUES ({$idUtente}, '{$_POST["ufficio"]}' )";
+        $data = $pdo->query($query); 
     }
 
     // dovrò fare in modo di poter aggiungere anche utenti della segreteria
