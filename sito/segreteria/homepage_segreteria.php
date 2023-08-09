@@ -53,9 +53,21 @@
                                 <div class="card cardSelezionabile bg p-3 h-100">
                                     <div class="card-body">
                                         <h5 class="card-title">Gestione utenti piattaforma</h5>
-                                        <img class="card-img    bg" src="https://webipedia.it/woa/wp-content/uploads/2015/12/gestire-funzionalita-utenti-wordpress.jpg" alt="Card image cap">
+                                        <img class="card-img bg top-buffer-s" src="https://webipedia.it/woa/wp-content/uploads/2015/12/gestire-funzionalita-utenti-wordpress.jpg" alt="Card image cap">
                                         <a id="gestioneUtenti" class="stretched-link" title="Sezione gestione utenti"
                                             href="gestioneUtenti.php" >
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- card gestione CDL -->
+                            <div class="col-4  bottom-buffer" id="">
+                                <div class="card cardSelezionabile bg p-3 h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Gestione corsi di laurea</h5>
+                                        <img class="card-img bg" src="https://www.firest.eu/wp-content/uploads/2020/09/Premio-di-laurea-FirEst-AiFOS-Todd-Visintin-2019-2020.jpg" alt="Card image cap">
+                                        <a id="gestioneCdl" class="stretched-link" title="Sezione gestione CDL"
+                                            href="gestioneCdl.php" >
                                         </a>
                                     </div>
                                 </div>

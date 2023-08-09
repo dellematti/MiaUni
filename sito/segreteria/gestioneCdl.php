@@ -55,63 +55,31 @@
                             <div class="col-lg-4 col-md-4 col-sm-6 col-md-offset-4 col-sm-offset-3 col-lg-offset-4 colonna-centrale"
                                 role="main">
                                 <h1 class="content-block-title clearfix" id="main-content">
-                                    Aggiungi utente</h1>
+                                    Aggiungi corso di laurea</h1>
                                 <br>
                                     <!-- <form method="POST" action="localhost/unimia/scripts/aggiungiUtente.php"> -->
-                                    <form method="POST" action="http://localhost/unimia/scripts/segreteria/aggiungiUtente.php">
+                                    <form method="POST" action="http://localhost/unimia/scripts/segreteria/aggiungiCdl.php">
                                         <div class="form-group" >
-                                            Inserisci le informazioni necessarie ad aggiungere un utente.
+                                            Inserisci le informazioni necessarie ad aggiungere un corso di laurea.
                                             <input id="nome"  class="form-control input-lg typeahead top-buffer-s" name="nome" type="text" class="form-control bg-transparent rounded-0 my-4" placeholder="Nome" 
                                                 aria-label="Nome" value="" aria-describedby="basic-addon1">
                                             <br>
-                                            <input id="cognome"  class="form-control input-lg typeahead top-buffer-s" name="cognome" type="text" class="form-control bg-transparent rounded-0 my-4" placeholder="Cognome" 
-                                                aria-label="Cognome" value="" aria-describedby="basic-addon1">
+                                            <input id="descrizione"  class="form-control input-lg typeahead top-buffer-s" name="descrizione" type="text" class="form-control bg-transparent rounded-0 my-4" placeholder="descrizione" 
+                                                aria-label="descrizione" value="" aria-describedby="basic-addon1">
                                             <br>
                                             <select id="tipo" name="tipoUtente" class="form-control input-lg typeahead top-buffer-s">
-                                                <option value="select">Seleziona tra studente e docente</option>
-                                                <option value="Studente">Studente</option>
-                                                <option value="Docente">Docente</option>
+                                                <option value="Studente">triennale</option>
+                                                <option value="Docente">magistrale</option>
                                             </select>
                                             <br>
-                                            <select id="CDL" name="cdl" class="form-control input-lg typeahead top-buffer-s">
-                                                <option value="select">Se l' utente è uno studente selezionare corso di laurea</option>
-                                                <?php
-                                                    $pdo = require 'C:\xampp\htdocs\unimia\scripts\connessioneDatabase.php';
-                                                    $query = "SELECT c.nome, c.id 
-                                                    FROM unieuro.corsidilaurea AS c";
-                                                    $data = $pdo->query($query);    
-                                                    
-                                                    foreach($data as $row) {   
-                                                        echo '<option value="',$row['id'],'">',$row['nome'],'</option>';
-                                                    }
-                                                ?>
-
-                                            </select>
-                                            <br>
-                                            <input id="ufficio"  class="form-control input-lg typeahead top-buffer-s" name="ufficio" type="text" 
-                                                class="form-control bg-transparent rounded-0 my-4" placeholder="Se l'utente è un docente, inserire l'indirizzo dell' ufficio" 
-                                                aria-label="Ufficio" value="" aria-describedby="basic-addon1">
-                                            <br>
-                                            
-
-
-                                            <!-- la password e l email verranno generate per ogni utente da uno script 
-                                                stessa cosa per l id, e per la matricola dello studente -->
-
-
                                             <button type="submit" class="btn btn-primary btn-lg btn-block">Aggiungi</button>
                                         </div>
                                     </form>
                             </div>
                         </div>    
-
-
-
                 </div>
             </div>
-
         </div>
-
 </body>
 
 </html>
