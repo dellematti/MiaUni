@@ -72,6 +72,18 @@
                                     </div>
                                 </div>
                             </div>
+                            <!-- card gestione insegnamenti -->
+                            <div class="col-4  bottom-buffer" id="">
+                                <div class="card cardSelezionabile bg p-3 h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Gestione insegnamenti</h5>
+                                        <img class="card-img bg" src="https://img.freepik.com/free-icon/class_318-59679.jpg" alt="Card image cap">
+                                        <a id="gestioneInsegnamenti" class="stretched-link" title="Sezione gestione insegnamenti"
+                                            href="gestioneInsegnamenti.php" >
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                 </div>
             </div>

@@ -2,7 +2,7 @@
 
 session_start();
 
-// print_r($_POST);
+// print_r($_SESSION);
 
 if (isset($_POST["nome"], $_POST["descrizione"], $_POST["tipoCdl"] )) {   // controllo se ci sono nome e cognome e tipo utente
 

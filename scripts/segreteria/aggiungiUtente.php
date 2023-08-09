@@ -107,6 +107,7 @@ if (isset($_POST["nome"], $_POST["cognome"], $_POST["tipoUtente"] )) {   // cont
 
 }
 
+header('Location: http://localhost/unimia/sito/segreteria/homepage_segreteria.php');
 
 
 ?>
