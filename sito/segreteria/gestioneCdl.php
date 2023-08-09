@@ -67,9 +67,9 @@
                                             <input id="descrizione"  class="form-control input-lg typeahead top-buffer-s" name="descrizione" type="text" class="form-control bg-transparent rounded-0 my-4" placeholder="descrizione" 
                                                 aria-label="descrizione" value="" aria-describedby="basic-addon1">
                                             <br>
-                                            <select id="tipo" name="tipoUtente" class="form-control input-lg typeahead top-buffer-s">
-                                                <option value="Studente">triennale</option>
-                                                <option value="Docente">magistrale</option>
+                                            <select id="tipoCdl" name="tipoCdl" class="form-control input-lg typeahead top-buffer-s">
+                                                <option value="triennale">triennale</option>
+                                                <option value="magistrale">magistrale</option>
                                             </select>
                                             <br>
                                             <button type="submit" class="btn btn-primary btn-lg btn-block">Aggiungi</button>
