@@ -105,13 +105,23 @@
 
                                             <!-- MANCANO LE PROPEDEUTICITA' -->
                                             <!-- sarà un select ma con valori multipli -->
+                                            <p>Se presenti, selezionare propedeuticità:</p>
+                                            <select id="propedeuticità"  name="propedeuticità" multiple  class="form-control input-lg typeahead top-buffer-s">
+                                                <!-- <option value="" disabled selected hidden >Se presenti, selezionare propedeuticità</option> -->
+                                                <?php
+                                                    $query = "SELECT i.id, i.nome
+                                                    FROM unieuro.insegnamenti AS i";
+                                                    $data = $pdo->query($query);    
+                                                    foreach($data as $row) {  
+                                                        echo'<option value="',$row['id'],'">',$row['nome'],'</option>';
+                                                    }
+                                                ?>
+                                            </select>
+                                            <br>
+                                         
                                             
 
 
-
-
-
-                                            
                                             <br>
                                             <button type="submit" class="btn btn-primary btn-lg btn-block">Aggiungi insegnamento</button>
                                         </div>
