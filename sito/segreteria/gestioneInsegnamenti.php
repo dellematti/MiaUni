@@ -64,41 +64,56 @@
                                             <br>
                                             <!-- potremmo mettere unn dropdown con 1 2 e 3 (o magari solo 1-2 se magistrale) -->
                                             <input id="anno"  class="form-control input-lg typeahead top-buffer-s" name="anno" type="number" class="form-control bg-transparent rounded-0 my-4" placeholder="anno" 
-                                            aria-label="anno" value="" max="3" aria-describedby="basic-addon1">
+                                            aria-label="anno" value="" max="3" min="1" aria-describedby="basic-addon1">
                                             <br>
                                             <input id="cfu"  class="form-control input-lg typeahead top-buffer-s" name="cfu" type="number" class="form-control bg-transparent rounded-0 my-4" placeholder="cfu" 
                                             aria-label="cfu" value="" max="180" aria-describedby="basic-addon1">
                                             <br>
                                             <select id="CDL" name="cdl" class="form-control input-lg typeahead top-buffer-s">
-                                                <!-- <option value="select">Se l' utente è uno studente selezionare corso di laurea</option> -->
+                                                <option value="" disabled selected hidden >Selezionare corso di laurea</option>
                                                 <?php
                                                     $pdo = require 'C:\xampp\htdocs\unimia\scripts\connessioneDatabase.php';
-                                                    $query = "SELECT c.nome, c.id 
+                                                    $query = "SELECT c.nome, c.id, c.magistrale 
                                                     FROM unieuro.corsidilaurea AS c";
                                                     $data = $pdo->query($query);    
                                                     
-                                                    foreach($data as $row) {   
-                                                        echo '<option value="',$row['id'],'">',$row['nome'],'</option>';
+                                                    foreach($data as $row) {  
+                                                        if ( $row['magistrale']) 
+                                                            echo '<option value="',$row['id'],'">',$row['nome']." - magistrale"."    id: ".$row['id'],'</option>';
+                                                        else echo '<option value="',$row['id'],'">',$row['nome']." - triennale"."    id: ".$row['id'],'</option>';
                                                     }
                                                 ?>
                                             </select>
+
                                             <br>
-                                            <select id="docente" name="docente" class="form-control input-lg typeahead top-buffer-s">
-                                                <!-- <option value="select">Se l' utente è uno studente selezionare corso di laurea</option> -->
+                                            <select id="docente" name="cdl" class="form-control input-lg typeahead top-buffer-s">
+                                                <option value="" disabled selected hidden >Selezionare docente</option>
+
                                                 <?php
-                                                    $pdo = require 'C:\xampp\htdocs\unimia\scripts\connessioneDatabase.php';
-                                                    $query = "SELECT u.id, u.nome, u.cognome 
+                                                    // $pdo = require 'C:\xampp\htdocs\unimia\scripts\connessioneDatabase.php'; // una volta per pagina!
+                                                    $query = "SELECT d.utente, u.nome, u.cognome 
                                                     FROM unieuro.docenti AS d
-                                                    INNER JOIN unieuro.utenti AS u ON d.id = u.id";
+                                                    INNER JOIN unieuro.utenti AS u ON d.utente= u.id";
                                                     $data = $pdo->query($query);    
-                                                    
-                                                    foreach($data as $row) {   
-                                                        echo '<option value="',$row['id'],'">',$row['nome'].$row['cognome'],'</option>';
+                                                    foreach($data as $row) {  
+                                                        echo'<option value="',$row['utente'],'">',$row['nome']." ".$row['cognome'],'</option>';
                                                     }
                                                 ?>
+                                                
                                             </select>
                                             <br>
-                                            <button type="submit" class="btn btn-primary btn-lg btn-block">Aggiungi</button>
+
+                                            <!-- MANCANO LE PROPEDEUTICITA' -->
+                                            <!-- sarà un select ma con valori multipli -->
+                                            
+
+
+
+
+
+                                            
+                                            <br>
+                                            <button type="submit" class="btn btn-primary btn-lg btn-block">Aggiungi insegnamento</button>
                                         </div>
                                     </form>
                             </div>
