@@ -55,7 +55,6 @@
                                 <h1 class="content-block-title clearfix" id="main-content">
                                     Aggiungi insegnamento</h1>
                                 <br>
-                                    <!-- <form method="POST" action="localhost/unimia/scripts/aggiungiUtente.php"> -->
                                     <form method="POST" action="http://localhost/unimia/scripts/segreteria/aggiungiInsegnamento.php">
                                         <div class="form-group" >
                                             Inserisci le informazioni necessarie per aggiungere l' insegnamento.
