@@ -68,7 +68,7 @@
                                             <input id="cfu"  class="form-control input-lg typeahead top-buffer-s" name="cfu" type="number" class="form-control bg-transparent rounded-0 my-4" placeholder="cfu" 
                                             aria-label="cfu" value="" max="180" aria-describedby="basic-addon1">
                                             <br>
-                                            <select id="CDL" name="cdl" class="form-control input-lg typeahead top-buffer-s">
+                                            <select id="cdl" name="cdl" class="form-control input-lg typeahead top-buffer-s">
                                                 <option value="" disabled selected hidden >Selezionare corso di laurea</option>
                                                 <?php
                                                     $pdo = require 'C:\xampp\htdocs\unimia\scripts\connessioneDatabase.php';
@@ -85,7 +85,7 @@
                                             </select>
 
                                             <br>
-                                            <select id="docente" name="cdl" class="form-control input-lg typeahead top-buffer-s">
+                                            <select id="docente" name="docente" class="form-control input-lg typeahead top-buffer-s">
                                                 <option value="" disabled selected hidden >Selezionare docente</option>
 
                                                 <?php
@@ -102,10 +102,9 @@
                                             </select>
                                             <br>
 
-                                            <!-- MANCANO LE PROPEDEUTICITA' -->
-                                            <!-- sarà un select ma con valori multipli -->
                                             <p>Se presenti, selezionare propedeuticità:</p>
-                                            <select id="propedeuticità"  name="propedeuticità" multiple  class="form-control input-lg typeahead top-buffer-s">
+                                            <!-- IMPORTANTE: se multiple allora mettere il name con le [] finali -->
+                                            <select id="propedeuticità"  name="propedeuticità[]" multiple  class="form-control input-lg typeahead top-buffer-s">
                                                 <!-- <option value="" disabled selected hidden >Se presenti, selezionare propedeuticità</option> -->
                                                 <?php
                                                     $query = "SELECT i.id, i.nome
@@ -117,10 +116,6 @@
                                                 ?>
                                             </select>
                                             <br>
-                                         
-                                            
-
-
                                             <br>
                                             <button type="submit" class="btn btn-primary btn-lg btn-block">Aggiungi insegnamento</button>
                                         </div>
