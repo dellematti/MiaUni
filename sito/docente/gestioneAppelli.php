@@ -56,7 +56,7 @@
                                 <h1 class="content-block-title clearfix" id="main-content">
                                     Aggiungi appello</h1>
                                 <br>
-                                    <form method="POST" action="http://localhost/unimia/scripts/segreteria/aggiungiInsegnamento.php">
+                                    <form method="POST" action="http://localhost/unimia/scripts/docente/aggiungiAppello.php">
                                         <div class="form-group" >
                                             Inserisci le informazioni necessarie per aggiungere l' appello.
                                             
@@ -86,7 +86,7 @@
                                             <p>Inserire data dell' esame:</p>
                                             <!-- <input id="nome"  class="form-control input-lg typeahead top-buffer-s" name="nome" type="text" class="form-control bg-transparent rounded-0 my-4" placeholder="Nome" 
                                                 aria-label="Nome" value="" aria-describedby="basic-addon1"> -->
-                                            <input type="date" id="start" class="form-control input-lg typeahead top-buffer-s" name="trip-start" 
+                                            <input type="date" id="dataEsame" class="form-control input-lg typeahead top-buffer-s" name="dataEsame" 
                                                 value="2023-07-22" min="2023-01-01" max="2024-12-31" />
                                             <br>
                                             <button type="submit" class="btn btn-primary btn-lg btn-block">Aggiungi appello</button>
