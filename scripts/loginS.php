@@ -39,6 +39,8 @@ if (isset($_POST["email"], $_POST["password"])) {   // controllo se ci sono emai
 
         if ( $row['email'] == $_POST['email']  && $row['pswrd'] == $_POST['password'] ) {
             $login = true;
+            $_SESSION['utente'] = $row['id'] ;   // salvo anche l id dell utente che ha fatto il login
+
             break;
         }
     }
@@ -58,7 +60,7 @@ if (isset($_POST["email"], $_POST["password"])) {   // controllo se ci sono emai
             header('Location: ../sito/studente/homepage.php');
         }else if ($dominio == "docenti.unimi.it") {
             $_SESSION['docente'] = true;
-            header('Location: ../sito/docente/homepage_docenti.php');
+            header('Location: ../sito/docente/homepage_docente.php');
         }else if ($dominio == "segreteria.unimi.it") {
             $_SESSION['segreteria'] = true;
             header('Location: ../sito/segreteria/homepage_segreteria.php');
