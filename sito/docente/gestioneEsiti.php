@@ -54,26 +54,25 @@
                             <div class="col-lg-4 col-md-4 col-sm-6 col-md-offset-4 col-sm-offset-3 col-lg-offset-4 colonna-centrale"
                                 role="main">
                                 <h1 class="content-block-title clearfix" id="main-content">
-                                    Aggiungi appello</h1>
+                                    Aggiungi esito esame</h1>
                                 <br>
-                                    <form method="POST" action="http://localhost/unimia/scripts/docente/aggiungiAppello.php">
+                                <form method="POST" action="http://localhost/unimia/scripts/docente/aggiungiEsito.php">
                                         <div class="form-group" >
-                                            Inserisci le informazioni necessarie registrare un esito esame.
+                                            Inserisci le informazioni necessarie registrare l' esito di un esame.
                                             
                                             <!-- saranno: SELEZIONA APPELLO e ci sarà il nome dell insegnamento
                                                           SELEZIONA STUDENTE con il suo nome e matricola, e SELEZIONA VOTO -->
 
 
-
-
-                                                          
-                                            <select id="insegnamento" name="insegnamento" class="form-control input-lg typeahead top-buffer-s">
-                                                <option value="" disabled selected hidden >Selezionare insegnamento</option>
+                                            <select id="appello" name="appello" class="form-control input-lg typeahead top-buffer-s">
+                                                <option value="" disabled selected hidden >Selezionare appello</option>
                                                 <?php
                                                     $pdo = require 'C:\xampp\htdocs\unimia\scripts\connessioneDatabase.php';
                                                     $query = 
-                                                        "SELECT i.id, i.nome , c.nome as cdl, c.magistrale
-                                                        FROM unieuro.insegnamenti AS i
+                                                        "SELECT a.appello_id, a.giorno, i.nome,c.magistrale,  c.nome as cdl
+                                                        FROM unieuro.appelli AS a
+                                                        INNER JOIN unieuro.insegnamenti as i
+                                                        ON a.insegnamento_id = i.id
                                                         INNER JOIN unieuro.corsidilaurea as c
                                                         ON i.corsodilaurea = c.id
                                                         WHERE i.docente = {$_SESSION['utente']} ";
@@ -81,22 +80,38 @@
                                                     
                                                     foreach($data as $row) {  
                                                         if ( $row['magistrale']) 
-                                                            echo '<option value="',$row['id'],'">',$row['nome']."   - CDL: ".$row['cdl']." - magistrale",'</option>';
-                                                        else echo '<option value="',$row['id'],'">',$row['nome']."   - CDL: ".$row['cdl']." - triennale",'</option>';
+                                                            echo '<option value="',$row['appello_id'],'">',$row['nome']."   - CDL: ".$row['cdl']." - magistrale"."   - Data: ".$row['giorno'],'</option>';
+                                                        else echo '<option value="',$row['appello_id'],'">',$row['nome']."   - CDL: ".$row['cdl']." - triennale"."   - Data: ".$row['giorno'],'</option>';
                                                     }
                                                 ?>
                                             </select>
+                                            <br>
+
+
+                                            <p>Inserire studente :</p>
+                                            <input list="matricole" name="matricola" class="form-control input-lg typeahead top-buffer-s">
+                                            <datalist id="matricole" >
+                                                <?php
+                                                    $query = 
+                                                        "SELECT s.matricola, u.nome, u.cognome
+                                                        FROM unieuro.studenti AS s
+                                                        INNER JOIN unieuro.utenti as u
+                                                        ON s.utente = u.id ";
+                                                    $data = $pdo->query($query);    
+                                                    
+                                                    foreach($data as $row) {  
+                                                        echo '<option value="',$row['matricola'],'">',$row['nome']." ".$row['cognome'],'</option>';
+                                                    }
+                                                ?>    
+                                            </datalist>
+
+                                            <p class ="top-buffer-s">Inserire esito esame :</p>
+                                            <input id="esito"  class=" input-lg typeahead top-buffer-s form-control  rounded-0 my-4" name="esito" type="number"  placeholder="valutazione" 
+                                            aria-label="esito" value="" max="31" min="0" aria-describedby="basic-addon1">
 
 
                                             <br>
-
-                                            <p>Inserire data dell' esame:</p>
-                                            <!-- <input id="nome"  class="form-control input-lg typeahead top-buffer-s" name="nome" type="text" class="form-control bg-transparent rounded-0 my-4" placeholder="Nome" 
-                                                aria-label="Nome" value="" aria-describedby="basic-addon1"> -->
-                                            <input type="date" id="dataEsame" class="form-control input-lg typeahead top-buffer-s" name="dataEsame" 
-                                                value="2023-07-22" min="2023-01-01" max="2024-12-31" />
-                                            <br>
-                                            <button type="submit" class="btn btn-primary btn-lg btn-block">Aggiungi appello</button>
+                                            <button type="submit" class="btn btn-primary btn-lg btn-block">Aggiungi esito</button>
                                         </div>
                                     </form>
                             </div>
