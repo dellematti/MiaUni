@@ -1,6 +1,5 @@
 <?php
     session_start();
-
     // dovrei controllare, magari con un trigger, che l esito che sto inserendo non sia già esistente
 
     // print_r($_SESSION);
