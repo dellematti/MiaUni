@@ -67,21 +67,25 @@
                                             <select id="appello" name="appello" class="form-control input-lg typeahead top-buffer-s">
                                                 <option value="" disabled selected hidden >Selezionare appello</option>
                                                 <?php
-                                                    $pdo = require 'C:\xampp\htdocs\unimia\scripts\connessioneDatabase.php';
-                                                    $query = 
-                                                        "SELECT a.appello_id, a.giorno, i.nome,c.magistrale,  c.nome as cdl
-                                                        FROM unieuro.appelli AS a
-                                                        INNER JOIN unieuro.insegnamenti as i
-                                                        ON a.insegnamento_id = i.id
-                                                        INNER JOIN unieuro.corsidilaurea as c
-                                                        ON i.corsodilaurea = c.id
-                                                        WHERE i.docente = {$_SESSION['utente']} ";
-                                                    $data = $pdo->query($query);    
+                                                    require 'C:\xampp\htdocs\unimia\scripts\connessioneDatabase2.php';
+                                                    $dbConnect = openConnection();
                                                     
-                                                    foreach($data as $row) {  
-                                                        if ( $row['magistrale']) 
-                                                            echo '<option value="',$row['appello_id'],'">',$row['nome']."   - CDL: ".$row['cdl']." - magistrale"."   - Data: ".$row['giorno'],'</option>';
-                                                        else echo '<option value="',$row['appello_id'],'">',$row['nome']."   - CDL: ".$row['cdl']." - triennale"."   - Data: ".$row['giorno'],'</option>';
+                                                    $idUtente = $_SESSION["utente"] ; // in session[utente] cè l id del docente
+                                                    $query = "select appello_id, giorno, nome, magistrale, nome_cdl from unieuro.get_appelli_docente($1)";
+                                                    $res = pg_prepare($dbConnect, "", $query);
+                                                    $row = pg_fetch_all(pg_execute($dbConnect, "", array($idUtente)));
+                                                    // if (is_null($row["appello_id"])) {
+                                                        //     $_SESSION["error"] = "errore.";
+                                                        //     redirect("../login.php");   // cambiare path
+                                                        // }
+                                                        
+                                                        
+                                                    foreach($row as $appello) {  
+                                                        // print_r ($appello);
+                                                        // if ( $appello['magistrale'] != 'f') 
+                                                        if ( $appello['magistrale'] === true) 
+                                                            echo '<option value="',$appello['appello_id'],'">',$appello['nome']."   - CDL: ".$appello['nome_cdl']." - magistrale"."   - Data: ".$appello['giorno'],'</option>';
+                                                        else echo '<option value="',$appello['appello_id'],'">',$appello['nome']."   - CDL: ".$appello['nome_cdl']." - triennale"."   - Data: ".$appello['giorno'],'</option>';
                                                     }
                                                 ?>
                                             </select>
@@ -92,15 +96,15 @@
                                             <input list="matricole" name="matricola" class="form-control input-lg typeahead top-buffer-s">
                                             <datalist id="matricole" >
                                                 <?php
-                                                    $query = 
-                                                        "SELECT s.matricola, u.nome, u.cognome
-                                                        FROM unieuro.studenti AS s
-                                                        INNER JOIN unieuro.utenti as u
-                                                        ON s.utente = u.id ";
-                                                    $data = $pdo->query($query);    
-                                                    
-                                                    foreach($data as $row) {  
-                                                        echo '<option value="',$row['matricola'],'">',$row['nome']." ".$row['cognome'],'</option>';
+                                                    $dbConnect = openConnection();
+                                                    $query = "select matricola, nome, cognome from unieuro.get_studenti()";
+                                                    $res = pg_prepare($dbConnect, "", $query);
+                                                    $row = pg_fetch_all(pg_execute($dbConnect, "",array() )); // non riceve nessun parametro in ingresso
+
+
+
+                                                    foreach($row as $studente) {  
+                                                        echo '<option value="',$studente['matricola'],'">',$studente['nome']." ".$studente['cognome'],'</option>';
                                                     }
                                                 ?>    
                                             </datalist>
