@@ -84,6 +84,14 @@ esami svolti, in quale data e qual'è il voto e i cfu ottenuti per esame -->
                             </tr>';
                         }   
                     
+
+
+                        // DA AGGIUNGERE :
+                        // ora dovrei aggiungere tutti gli esami del cdl che mancano allo studente (esami del cdl che hanno
+                        // voti null o magari anche minori di 18, devo decidere come gestire le insufficienze)
+
+
+
                     ?>
                 </table>
                 </div>
