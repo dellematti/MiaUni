@@ -2,8 +2,6 @@
 esami svolti, in quale data e qual'è il voto e i cfu ottenuti per esame -->
 
 
-
-
 <head>
 
     <meta charset="utf-8">

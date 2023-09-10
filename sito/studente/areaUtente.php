@@ -69,9 +69,6 @@ esami svolti, in quale data e qual'è il voto e i cfu ottenuti per esame -->
 
                         $data = $pdo->query($query);
 
-
-
-
                         // ho row[0] perchò nel db ho sia 'nome' per cdl che per utente, dovrei cambiarne uno                      
                         foreach($data as $row) {   
                             echo '<tr>
