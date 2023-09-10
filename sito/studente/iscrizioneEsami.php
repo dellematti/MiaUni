@@ -84,6 +84,23 @@
                                                     }
                                                 ?>
                                             </select>
+                                            <select id="appelliNonCDL" name="appelliNonCDL" class="form-control input-lg typeahead top-buffer-s">
+                                                <option value="" disabled selected hidden >Oppure selezionare appelli da un CDL diverso dal tuo</option>
+                                                <?php
+                                                    $query = "select appello_id, nome, giorno from unieuro.get_appelli_studente($1);";
+                                                    // $query = "appello_id, nome, giorno from unieuro.get_appelli_cdl_non_studente($1);";
+
+                                                    $res = pg_prepare($dbConnect, "", $query);
+                                                    $row = pg_fetch_all(pg_execute($dbConnect, "", array($matricola)));
+                                                        
+                                                    foreach($row as $appello) {  
+                                                        if ( $appello['magistrale'] === true) 
+                                                            echo '<option value="', $appello['appello_id'],'">',$appello['nome']."   - CDL: "." - magistrale"."   - Data: ".$appello['giorno'],'</option>';
+                                                        else echo '<option value="', $appello['appello_id'],'">',$appello['nome']."   - CDL: "." - triennale"."   - Data: ".$appello['giorno'],'</option>';
+                                                    }
+                                                ?>
+                                            </select>
+                                            
                                             <br>
 
                                             <br>
