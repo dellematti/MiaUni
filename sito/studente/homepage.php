@@ -56,7 +56,7 @@
                                             <h5 class="card-title">Iscrizione esami</h5>
                                             <img class="card-img    bg" src="https://prog2.di.unimi.it/_images/prog2.png" alt="Card image cap">
                                             <a id="albumLink" class="stretched-link" title="Click to do something"
-                                                href="" action="risultati" method="GET">
+                                                href="iscrizioneEsami.php" action="risultati" method="GET">
                                             </a>
                                         </div>
                                     </div>
