@@ -71,7 +71,7 @@
                                                     $row = pg_fetch_all(pg_execute($dbConnect, "", array($idUtente)));
 
                                                     $matricola = $row[0]['matricola'];
-                                                    $_SESSION['matricola'] = $matricola;
+                                                    $_SESSION['matricola'] = $matricola;    // andrebbe messa nell homepage studente, e la eseguo una volta sola
 
                                                     $query = "select appello_id, nome, giorno from unieuro.get_appelli_studente($1);";
                                                     $res = pg_prepare($dbConnect, "", $query);

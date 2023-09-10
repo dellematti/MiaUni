@@ -60,36 +60,30 @@ esami svolti, in quale data e qual'è il voto e i cfu ottenuti per esame -->
                         <th>CFU</th>
                     </tr>
                     <?php
-                        // session_start();     // NON serve perchè l ho gia fatto prima in questa pagina
-                        $pdo = require 'C:\xampp\htdocs\unimia\scripts\connessioneDatabase.php';
+                        require 'C:\xampp\htdocs\unimia\scripts\connessioneDatabase2.php';
+                        $dbConnect = openConnection();
+
+                        $idUtente = $_SESSION["utente"] ;
+                        $query = "select * from unieuro.get_matricola_studente($1);";
+                        $res = pg_prepare($dbConnect, "", $query);
+                        $row = pg_fetch_all(pg_execute($dbConnect, "", array($idUtente)));
+
+                        $matricola = $row[0]['matricola'];
+
+                        $query = "select * from unieuro.get_esami_studente($1)";
+                        $res = pg_prepare($dbConnect, "", $query);
+                        $row = pg_fetch_all(pg_execute($dbConnect, "", array($matricola )));
+
                         
-                        // prendo la matricola dall email
-                        $query = "SELECT s.matricola
-                        FROM unieuro.utenti AS u
-                        INNER JOIN unieuro.studenti AS s ON s.utente = u.id
-                        WHERE u.email = '{$_SESSION['email']}' ";
-
-
-                        $data = $pdo->query($query);
-                        
-                        foreach($data as $row)  $matricola = $row['matricola']; // non servirebbe il ciclo, le row sono 1 sola
-
-                        // se uso una $var nella query, ci vanno le "" e non le ''     bello
-                        $query = "SELECT se.studentematricola , a.giorno , i.nome , i.cfu, se.voto 
-                        FROM unieuro.studentiesami  AS se
-                        INNER JOIN unieuro.appelli AS a ON a.appello_id = se.appello_id  -- Joino il risultato con l appello 
-                        INNER JOIN unieuro.insegnamenti AS i ON a.insegnamento_id = i.id -- e joino tutto con gli insegnamenti
-                        WHERE se.studentematricola = $matricola";      
-                        $data = $pdo->query($query);    
-                    
-                        foreach($data as $row) {   // ogni data è un esame
+                        foreach($row as $esame)  {
                             echo '<tr>
-                            <td>',$row['nome'],'</td>
-                            <td>',$row['voto'],'</td>
-                            <td>',$row['giorno'],'</td>
-                            <td>',$row['cfu'],'</td>
+                            <td>',$esame['nome'],'</td>
+                            <td>',$esame['voto'],'</td>
+                            <td>',$esame['giorno'],'</td>
+                            <td>',$esame['cfu'],'</td>
                             </tr>';
-                        }
+                        }   
+                    
                     ?>
                 </table>
                 </div>
