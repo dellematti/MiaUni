@@ -279,15 +279,174 @@ END;//
 
 
 
+create or replace trigger voto_già_presente
+      before update on unieuro.studentiesami
+      for each row
+    declare
+      valore_voto number;
+    begin
+      select voto
+        INTO valore_voto
+        from unieuro.studentiesami s
+      where s.matricola = :new.s.matricola;
+ 
+     if valore_voto IS NOT null then
+        raise_application_error(-20000, 'Update table failed. Row to be update is not found.');
+     end if;
+   end;
+ 
 
 
 
-CREATE OR REPLACE FUNCTION unieuro.controlla_voto_già_presente () 
+
+--                                     CONTROLLARE IL TRIGGER PRECEDENTE !!!!!!! non va ancora bene   !!!!!
+ 
+
+
+  
+  
+  
+  
+  --                               STUDENTE
+  
+  
+  -- ISCRIZIONE ESAMI
+  
+  
+  
+  
+  -- restituisce tutti gli appelli del corso di laurea dello studente  
+CREATE OR REPLACE FUNCTION unieuro.get_appelli_studente ( matricola_studente integer )
+RETURNS TABLE (
+	appello_id integer,
+    nome varchar (255),
+    giorno date 
+)
+LANGUAGE plpgsql
+AS $$
+	begin
+		RETURN QUERY
+  SELECT a.appello_id , i.nome, a.giorno     -- IMPORTANTE selezionare qua i parametri da restituire e non mettere *, a meno che non li restituisca tutti
+  FROM unieuro.appelli a 
+  INNER JOIN unieuro.insegnamenti i 
+  ON a.insegnamento_id = i.id 
+  WHERE i.corsodilaurea = (        
+  	SELECT s.cdl 
+  	FROM unieuro.studenti s 
+  	WHERE s.matricola = matricola_studente
+  );
+	 END;
+ $$;
+-- per provare la funzione
+select appello_id, nome, giorno from unieuro.get_appelli_studente(987180);
+
+
+
+
+  -- restituisce tutti gli appelli di corsi di laurea diversi da quello dello studente 
+CREATE OR REPLACE FUNCTION unieuro.get_appelli_cdl_non_studente ( matricola_studente integer )
+RETURNS TABLE (
+	appello_id integer,
+    nome varchar (255),
+    giorno date ,
+    cdl varchar (50)
+)
+LANGUAGE plpgsql
+AS $$
+	begin
+		RETURN QUERY
+  SELECT a.appello_id , i.nome, a.giorno, c.nome AS cdl     -- IMPORTANTE selezionare qua i parametri da restituire e non mettere *, a meno che non li restituisca tutti
+  FROM unieuro.appelli a 
+  INNER JOIN unieuro.insegnamenti i 
+  ON a.insegnamento_id = i.id 
+  INNER JOIN unieuro.corsidilaurea c 
+  ON i.corsodilaurea = c.id 
+  WHERE i.corsodilaurea != (        
+  	SELECT s.cdl 
+  	FROM unieuro.studenti s 
+  	WHERE s.matricola = 987180
+  );
+	 END;
+ $$;
+
+-- per provare la funzione
+select appello_id, nome, giorno, cdl from unieuro.get_appelli_cdl_non_studente(987180);
+  
+
+
+
+-- funzione che restituisce la matricola di uno studente,dato il suo codice id
+CREATE OR REPLACE FUNCTION unieuro.get_matricola_studente ( id_utente integer )
+RETURNS TABLE (
+	    cdl varchar (50)
+)
+LANGUAGE plpgsql
+AS $$
+	begin
+		RETURN QUERY
+SELECT s.matricola 
+FROM unieuro.studenti s 
+INNER JOIN unieuro.utenti u 
+ON s.utente = u.id 
+WHERE u.id = id_utente;
+	 END;
+ $$;
+-- per provare la funzione
+select * from unieuro.get_matricola_studente(1);
+  
+
+
+
+-- procedura per iscrivere uno studente ad un determinato appello
+CREATE PROCEDURE iscrizione_appello ( matricola integer, appello integer)
+LANGUAGE SQL
+AS $$
+     INSERT INTO unieuro.studentiesami
+          (                    
+            studentematricola,
+            appello_id    
+          ) 
+     VALUES 
+          ( 
+            matricola,
+            appello
+          ) 
+$$;
 
 
 
 
 
+
+
+-- CARRIERA STUDENTE
+
+--funzione che restituisce tutti gli esami sostenuti da uno studente (esami con esito >= 18)
+CREATE OR REPLACE FUNCTION unieuro.get_esami_studente ( matricola_studente integer )
+RETURNS TABLE (
+	nome varchar (50),
+	cfu integer,
+	giorno date, 
+	voto integer
+)
+LANGUAGE plpgsql
+AS $$
+	begin
+		RETURN QUERY
+SELECT i.nome , i.cfu , a.giorno , s.voto 
+FROM unieuro.studentiesami s 
+INNER JOIN unieuro.appelli a 
+ON s.appello_id = a.appello_id 
+INNER JOIN unieuro.insegnamenti i 
+ON a.insegnamento_id = i.id 
+WHERE s.studentematricola = matricola_studente AND 
+	s.voto >= 18;
+	 END;
+ $$;
+-- per provare la funzione
+select * from unieuro.get_esami_studente(987180);
+-- devo pensare a come fare se uno studente ha un voto insufficiente, o non viene segnato, oppure :
+-- il docente mette il voto cosi come, se il voto è minore di 18 lo studente può iscriversi nuovamente all appello (in pratica cancella il voto)
 
 
 
