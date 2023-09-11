@@ -55,7 +55,7 @@
                                         Rimuovi utente</h1>
                                     <br>
                                         <!-- <form method="POST" action="localhost/unimia/scripts/aggiungiUtente.php"> -->
-                                        <form method="POST" action="http://localhost/unimia/scripts/segreteria/aggiungiUtente.php">
+                                        <form method="POST" action="http://localhost/unimia/scripts/segreteria/rimuoviUtente.php">
                                             <div class="form-group" >
                                                 <p>Selezionare utente da cancellare (studenti o docenti) : </p>
                                                 <input list="utente" name="utente" class="form-control input-lg typeahead top-buffer-s">
