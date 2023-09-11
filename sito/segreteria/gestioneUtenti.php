@@ -67,7 +67,7 @@
                                         <h5 class="card-title">Rimuovi utente</h5>
                                         <img class="card-img bg" src="http://localhost/unimia/img/remove.jpg" alt="Card image cap">
                                         <a id="gestioneCdl" class="stretched-link" title="Sezione gestione CDL"
-                                            href="" >
+                                            href="rimuoviUtente.php" >
                                         </a>
                                     </div>
                                 </div>
