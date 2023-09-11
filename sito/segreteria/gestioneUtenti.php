@@ -44,69 +44,49 @@
         <div class="main-content">
             <div class="container pt-4 mt-5">
                 <div class="row justify-content-between">
-                    <?php
+                        <?php
                         session_start();
                         echo "<h2 class=\"top-buffer-s\">",$_SESSION['email'],"</h2>"
-                    ?>
-
-                        <!-- ORA DEVO TROVARE UN MODO DI AGGIUNGERE RIMUOVERE O MODIFICARE GLI UTENTI -->
-                        <!-- metto un cerca utente per rimuoverli o modificarli, e un aggiungi utente -->
-                        <div class="row">
-                            <div class="col-lg-4 col-md-4 col-sm-6 col-md-offset-4 col-sm-offset-3 col-lg-offset-4 colonna-centrale"
-                                role="main">
-                                <h1 class="content-block-title clearfix" id="main-content">
-                                    Aggiungi utente</h1>
-                                <br>
-                                    <!-- <form method="POST" action="localhost/unimia/scripts/aggiungiUtente.php"> -->
-                                    <form method="POST" action="http://localhost/unimia/scripts/segreteria/aggiungiUtente.php">
-                                        <div class="form-group" >
-                                            Inserisci le informazioni necessarie ad aggiungere un utente.
-                                            <input id="nome"  class="form-control input-lg typeahead top-buffer-s" name="nome" type="text" class="form-control bg-transparent rounded-0 my-4" placeholder="Nome" 
-                                                aria-label="Nome" value="" aria-describedby="basic-addon1">
-                                            <br>
-                                            <input id="cognome"  class="form-control input-lg typeahead top-buffer-s" name="cognome" type="text" class="form-control bg-transparent rounded-0 my-4" placeholder="Cognome" 
-                                                aria-label="Cognome" value="" aria-describedby="basic-addon1">
-                                            <br>
-                                            <select id="tipo" name="tipoUtente" class="form-control input-lg typeahead top-buffer-s">
-                                                <option value="select">Seleziona tra studente e docente</option>
-                                                <option value="Studente">Studente</option>
-                                                <option value="Docente">Docente</option>
-                                            </select>
-                                            <br>
-                                            <select id="CDL" name="cdl" class="form-control input-lg typeahead top-buffer-s">
-                                                <option value="select">Se l' utente è uno studente selezionare corso di laurea</option>
-                                                <?php
-                                                    $pdo = require 'C:\xampp\htdocs\unimia\scripts\connessioneDatabase.php';
-                                                    $query = "SELECT c.nome, c.id 
-                                                    FROM unieuro.corsidilaurea AS c";
-                                                    $data = $pdo->query($query);    
-                                                    
-                                                    foreach($data as $row) {   
-                                                        echo '<option value="',$row['id'],'">',$row['nome'],'</option>';
-                                                    }
-                                                ?>
-
-                                            </select>
-                                            <br>
-                                            <input id="ufficio"  class="form-control input-lg typeahead top-buffer-s" name="ufficio" type="text" 
-                                                class="form-control bg-transparent rounded-0 my-4" placeholder="Se l'utente è un docente, inserire l'indirizzo dell' ufficio" 
-                                                aria-label="Ufficio" value="" aria-describedby="basic-addon1">
-                                            <br>
-                                            
-
-
-                                            <!-- la password e l email verranno generate per ogni utente da uno script 
-                                                stessa cosa per l id, e per la matricola dello studente -->
-
-
-                                            <button type="submit" class="btn btn-primary btn-lg btn-block">Aggiungi</button>
-                                        </div>
-                                    </form>
+                        ?>
+                        <div class="row top-buffer right-buffer" id="">
+                            <div class="col-4  bottom-buffer" id="">
+                                <div class="card cardSelezionabile bg p-3 h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Aggiungi utente</h5>
+                                        <img class="card-img bg top-buffer-s" src="http://localhost/unimia/img/add.png" alt="Card image cap">
+                                        <a id="gestioneUtenti" class="stretched-link" title="Sezione gestione utenti"
+                                            href="aggiungiUtente.php" >
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
-                        </div>    
-
-
-
+                            <!-- card gestione CDL -->
+                            <div class="col-4  bottom-buffer" id="">
+                                <div class="card cardSelezionabile bg p-3 h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Rimuovi utente</h5>
+                                        <img class="card-img bg" src="http://localhost/unimia/img/remove.jpg" alt="Card image cap">
+                                        <a id="gestioneCdl" class="stretched-link" title="Sezione gestione CDL"
+                                            href="" >
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- card gestione insegnamenti -->
+                            <div class="col-4  bottom-buffer" id="">
+                                <div class="card cardSelezionabile bg p-3 h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">modifica utente</h5>
+                                        <img class="card-img bg" src="http://localhost/unimia/img/modify.png" alt="Card image cap">
+                                        <a id="gestioneInsegnamenti" class="stretched-link" title="Sezione gestione insegnamenti"
+                                            href="" >
+                                            <!-- per modifica utente potrei mettere una pagina che fa vedere le informazioni
+                                            attuali dell utente, e un form in cui rimetterle tutte -->
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                 </div>
             </div>
 

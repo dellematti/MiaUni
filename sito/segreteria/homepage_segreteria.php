@@ -53,7 +53,7 @@
                                 <div class="card cardSelezionabile bg p-3 h-100">
                                     <div class="card-body">
                                         <h5 class="card-title">Gestione utenti piattaforma</h5>
-                                        <img class="card-img bg top-buffer-s" src="https://webipedia.it/woa/wp-content/uploads/2015/12/gestire-funzionalita-utenti-wordpress.jpg" alt="Card image cap">
+                                        <img class="card-img bg top-buffer-s" src="http://localhost/unimia/img/utenti.png" alt="Card image cap">
                                         <a id="gestioneUtenti" class="stretched-link" title="Sezione gestione utenti"
                                             href="gestioneUtenti.php" >
                                         </a>
