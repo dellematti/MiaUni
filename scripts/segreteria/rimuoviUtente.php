@@ -9,7 +9,7 @@ if (isset($_POST["utente"])) {
     require 'C:\xampp\htdocs\unimia\scripts\connessioneDatabase2.php';
     $dbConnect = openConnection();
     
-    
+
     $idUtente = $_POST["utente"] ;
     $query = "CALL cancella_utente ( $1 );";
     $res = pg_prepare($dbConnect, "", $query);
@@ -23,3 +23,4 @@ if (isset($_POST["utente"])) {
 }
 header('Location: http://localhost/unimia/sito/segreteria/homepage_segreteria.php');
 ?>
+
