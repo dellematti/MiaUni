@@ -61,7 +61,7 @@ CREATE TABLE uniEuro.appelli (     -- potrei non avere appello_id perche ogni re
 );
 
 
-CREATE TABLE uniEuro.studentiEsami (
+CREATE TABLE  uniEuro.studentiEsami (
     studenteMatricola serial  REFERENCES uniEuro.studenti(matricola),
     appello_id serial  REFERENCES uniEuro.appelli(appello_id),
     voto int ,
@@ -543,6 +543,67 @@ CALL cancella_utente ( 4 );
 
 
 	                                                        -- TRIGGER
+
+
+
+-- 2 )
+-- Correttezza delle iscrizioni agli esami. 
+-- controllo che lo studente abbia passato gli insegnamenti propedeutici a quello a cui si iscrive, (e controllo che sia del cdl giusto)
+
+	CREATE TRIGGER controllaPropedeuticità BEFORE INSERT ON unieuro.studentiesami  
+	FOR EACH ROW EXECUTE FUNCTION unieuro.controlla_esami_propedeutici();
+
+
+	CREATE OR REPLACE FUNCTION unieuro.controlla_esami_propedeutici()
+	   RETURNS TRIGGER 
+	   LANGUAGE PLPGSQL
+	AS $$
+	BEGIN
+		IF EXISTS (
+			SELECT DISTINCT p.insegnamento      -- seleziono gli insegnamenti propedeutici rispetto a quello dell appello a cui lo studente si iscrive
+			FROM unieuro.studentiesami s 
+			INNER JOIN unieuro.appelli a 
+			--ON s.appello_id = a.appello_id      
+			ON NEW.appello_id = a.appello_id    
+			INNER JOIN unieuro.insegnamenti i   
+			ON a.insegnamento_id = i.id 
+			INNER JOIN unieuro.propedeuticità p 
+			ON i.id = p.propedeuticoa
+			WHERE NOT EXISTS (                    -- cerco quelli passati dallo studente
+				SELECT DISTINCT i2.id  
+				FROM unieuro.studentiesami s2 
+				INNER JOIN unieuro.appelli a 
+				ON s2.appello_id = a.appello_id 
+				INNER JOIN unieuro.insegnamenti i2 
+				ON a.insegnamento_id = i2.id 
+				WHERE s2.studentematricola = NEW.studentematricola AND  
+				s2.voto >= 18 AND i2.id = p.insegnamento        
+			)
+		)
+		THEN 
+	raise exception 'Lo studente non ha passato gli esami propedeutici per potersi iscrivere a questo appello';  
+	END IF ;
+
+
+	-- ora controllo che sia il cdl dello studente 
+	IF NOT EXISTS (
+		SELECT s.cdl                               -- seleziono solo il cdl dello studente , se 
+		FROM unieuro.studenti s
+		WHERE s.matricola = NEW.studentematricola AND s.cdl = (
+			SELECT i.corsodilaurea                 -- s.cdl è uguale al cdl dell esame a cui mi iscrivo
+			FROM unieuro.appelli a 
+			INNER JOIN unieuro.insegnamenti i 
+			ON a.insegnamento_id = i.id 
+			WHERE a.appello_id  = NEW.appello_id
+			)
+	) THEN  raise exception 'L esame non è del cdl dello studente';  
+	END IF ;
+	-- fine corpo trigger
+	RETURN NEW ;
+	END;
+	$$
+	
+		
 
 
 -- 3 )
