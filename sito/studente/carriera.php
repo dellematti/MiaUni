@@ -83,17 +83,51 @@ esami svolti, in quale data e qual'è il voto e i cfu ottenuti per esame -->
                             </tr>';
                         }   
                     
-
-
-                        // DA AGGIUNGERE :
-                        // ora dovrei aggiungere tutti gli esami del cdl che mancano allo studente (esami del cdl che hanno
-                        // voti null o magari anche minori di 18, devo decidere come gestire le insufficienze)
-
                         
                         ?>
                 </table>
             </div>
             <br>
+                <!-- esami mancanti e media ponderata     somma di (cfu * voto) / somma di cfu -->
+                <br>
+                <h3 class="top-buffer">Media voti : 
+                <?php
+                    $query = "select * from unieuro.get_media_studente($1); "; 
+                    $res = pg_prepare($dbConnect, "", $query);
+                    $row = pg_fetch_all(pg_execute($dbConnect, "", array($matricola )));
+                    echo$row[0]['media'];
+                ?>
+                Totale CFU :
+                <!-- </h3>
+                <br>  posso usare questa parte di codice commentato se voglio avere media e cfu uno sopra l altro
+                <h3 class="top-buffer">Totale CFU :  -->
+                <?php
+                    $query = "select * from unieuro.get_cfu_studente($1);
+                    "; 
+                    $res = pg_prepare($dbConnect, "", $query);
+                    $row = pg_fetch_all(pg_execute($dbConnect, "", array($matricola )));
+                    echo$row[0]['cfutotali'];
+                ?>
+                </h3>
+                
+                
+
+                <!-- ora gli esami mancanti -->
+                <h3 class="top-buffer">Esami mancanti : </h3>
+                <div class="row top-buffer right-buffer" id="">
+                <?php
+                    $query = "SELECT * FROM unieuro.get_esami_mancanti($1); "; 
+                    $res = pg_prepare($dbConnect, "", $query);
+                    $row = pg_fetch_all(pg_execute($dbConnect, "", array($matricola )));
+
+                    foreach($row as $esame)  {
+                        echo '<p class="fs-4 fw-bolder"> - ',$esame['nome'],'</p>';
+                    }  
+                ?>
+
+                </div>
+
+
                 <div class="d-grid gap-2 d-md-block">
                     <a href="./carrieraCompleta.php" class="btn btn-primary btn-lg  top-buffer"  >Carriera completa dello studente </a>
                 </div>
