@@ -61,7 +61,7 @@ CREATE TABLE uniEuro.appelli (     -- potrei non avere appello_id perche ogni re
 );
 
 
-CREATE TABLE uniEuro.studentiEsami (
+CREATE TABLE  uniEuro.studentiEsami (
     studenteMatricola serial  REFERENCES uniEuro.studenti(matricola),
     appello_id serial  REFERENCES uniEuro.appelli(appello_id),
     voto int ,
@@ -265,7 +265,8 @@ UPDATE unieuro.studentiesami
 SET voto = voto_esame
 WHERE studentematricola = matricola AND appello_id = appello;
 $$;
---CALL inserire_voto ( parametri );
+
+CALL inserire_voto ( parametri );
 
 -- trigger in cui controllo che il record sia effettivamente senza voto 
 CREATE TRIGGER voto_già_presente BEFORE UPDATE ON unieuro.studentiesami 
@@ -447,6 +448,315 @@ WHERE s.studentematricola = matricola_studente AND
 select * from unieuro.get_esami_studente(987180);
 -- devo pensare a come fare se uno studente ha un voto insufficiente, o non viene segnato, oppure :
 -- il docente mette il voto cosi come, se il voto è minore di 18 lo studente può iscriversi nuovamente all appello (in pratica cancella il voto)
+
+
+
+
+
+
+
+
+--                                                                      SEGRETERIA 
+
+--                                                                          GESTIONE UTENTI
+
+--restituisce tutti gli utenti
+CREATE OR REPLACE FUNCTION unieuro.get_utenti ( )
+RETURNS TABLE (
+	id_utente integer,
+    nome varchar (30), 
+    cognome varchar(30)
+)
+LANGUAGE plpgsql
+AS $$
+	begin
+		RETURN QUERY
+    SELECT u.id , u.nome, u.cognome
+    FROM unieuro.utenti as u;
+	 END;
+ $$;
+-- se volessi anche far vedere se l utente è studente docente o segreteria, potrei aggiungnere nella query dei where not exists, se l utente
+-- non esiste nella tabella docenti e segreteria allora è studente
+
+-- per provare la funzione
+select * from unieuro.get_utenti();
+
+
+
+--restituisce tutti gli utenti non della segreteria
+CREATE OR REPLACE FUNCTION unieuro.get_utenti_non_segreteria ( )
+RETURNS TABLE (
+	id_utente integer,
+    nome varchar (30), 
+    cognome varchar(30)
+)
+LANGUAGE plpgsql
+AS $$
+	begin
+		RETURN QUERY
+    SELECT u.id , u.nome, u.cognome
+    FROM unieuro.utenti as u
+   	WHERE NOT EXISTS (
+   		SELECT *
+   		FROM unieuro.segreteria s
+   		WHERE s.utente = u.id 
+   	);
+	 END;
+ $$;
+-- per provare la funzione
+select * from unieuro.get_utenti_non_segreteria();
+-- se volessi anche far vedere se l utente è studente docente o segreteria, potrei aggiungnere nella query dei where not exists, se l utente
+-- non esiste nella tabella docenti e segreteria allora è studente
+
+
+
+
+
+-- nella procedura che cancella un utente, potrei mandare in input il codice utente, per controllare che un utente non possa eliminare se stesso
+
+-- procedura che cancella un utente 
+CREATE OR REPLACE PROCEDURE cancella_utente ( id_utente integer)
+AS $$  
+BEGIN 
+	DELETE FROM unieuro.segreteria se                                            -- PROCEDURA CON PiU QUERY, SINTASSI DIVERSA
+	WHERE se.utente = id_utente;
+
+	DELETE FROM unieuro.docenti d                                            
+	WHERE d.utente  = id_utente;
+
+	DELETE FROM unieuro.studenti s                                            
+	WHERE s.utente = id_utente;
+	
+	DELETE FROM unieuro.utenti u
+	WHERE u.id = id_utente;
+
+END;
+$$ LANGUAGE plpgsql;
+-- prova
+CALL cancella_utente ( 4 );
+
+
+
+
+
+
+
+
+	                                                        -- TRIGGER
+
+
+
+-- 2 )
+-- Correttezza delle iscrizioni agli esami. 
+-- controllo che lo studente abbia passato gli insegnamenti propedeutici a quello a cui si iscrive, (e controllo che sia del cdl giusto)
+
+	CREATE TRIGGER controllaPropedeuticità BEFORE INSERT ON unieuro.studentiesami  
+	FOR EACH ROW EXECUTE FUNCTION unieuro.controlla_esami_propedeutici();
+
+
+	CREATE OR REPLACE FUNCTION unieuro.controlla_esami_propedeutici()
+	   RETURNS TRIGGER 
+	   LANGUAGE PLPGSQL
+	AS $$
+	BEGIN
+		IF EXISTS (
+			SELECT DISTINCT p.insegnamento      -- seleziono gli insegnamenti propedeutici rispetto a quello dell appello a cui lo studente si iscrive
+			FROM unieuro.studentiesami s 
+			INNER JOIN unieuro.appelli a 
+			--ON s.appello_id = a.appello_id      
+			ON NEW.appello_id = a.appello_id    
+			INNER JOIN unieuro.insegnamenti i   
+			ON a.insegnamento_id = i.id 
+			INNER JOIN unieuro.propedeuticità p 
+			ON i.id = p.propedeuticoa
+			WHERE NOT EXISTS (                    -- cerco quelli passati dallo studente
+				SELECT DISTINCT i2.id  
+				FROM unieuro.studentiesami s2 
+				INNER JOIN unieuro.appelli a 
+				ON s2.appello_id = a.appello_id 
+				INNER JOIN unieuro.insegnamenti i2 
+				ON a.insegnamento_id = i2.id 
+				WHERE s2.studentematricola = NEW.studentematricola AND  
+				s2.voto >= 18 AND i2.id = p.insegnamento        
+			)
+		)
+		THEN 
+	raise exception 'Lo studente non ha passato gli esami propedeutici per potersi iscrivere a questo appello';  
+	END IF ;
+
+
+	-- ora controllo che sia il cdl dello studente 
+	IF NOT EXISTS (
+		SELECT s.cdl                               -- seleziono solo il cdl dello studente , se 
+		FROM unieuro.studenti s
+		WHERE s.matricola = NEW.studentematricola AND s.cdl = (
+			SELECT i.corsodilaurea                 -- s.cdl è uguale al cdl dell esame a cui mi iscrivo
+			FROM unieuro.appelli a 
+			INNER JOIN unieuro.insegnamenti i 
+			ON a.insegnamento_id = i.id 
+			WHERE a.appello_id  = NEW.appello_id
+			)
+	) THEN  raise exception 'L esame non è del cdl dello studente';  
+	END IF ;
+	-- fine corpo trigger
+	RETURN NEW ;
+	END;
+	$$
+	
+		
+
+
+-- 3 )
+-- Correttezza del calendario d’esame. Non `e possibile programmare, nella stessa giornata, appelli 
+-- per più esami dello stesso anno di un corso di laurea.
+
+	CREATE TRIGGER controllaAppelli BEFORE INSERT ON unieuro.appelli 
+	FOR EACH ROW EXECUTE FUNCTION unieuro.controlla_appelli_stesso_cdl();
+
+
+	CREATE OR REPLACE FUNCTION unieuro.controlla_appelli_stesso_cdl()
+	   RETURNS TRIGGER 
+	   LANGUAGE PLPGSQL
+	AS $$
+	BEGIN
+	   -- trigger logic
+			IF EXISTS (
+		SELECT *
+		FROM unieuro.appelli a
+		INNER JOIN unieuro.insegnamenti i 
+		ON a.insegnamento_id = i.id 
+		WHERE a.giorno = NEW.giorno AND
+		i.corsodilaurea = ( -- ora devo trovare il corso di laurea del nuovo appello 
+			SELECT c.id 
+			FROM unieuro.corsidilaurea c 
+			INNER JOIN unieuro.insegnamenti i2
+			ON i2.corsodilaurea = c.id 
+			WHERE i2.id = NEW.insegnamento_id
+		)
+	) THEN 
+	raise exception 'Esiste già un appello dello stesso cdl in quella data';  
+	END IF ;
+	-- fine corpo trigger
+
+	RETURN NEW ;
+
+	END;
+	$$
+
+
+
+	
+	
+-- 4 )
+-- • Produzione della carriera completa di uno studente.
+
+CREATE OR REPLACE FUNCTION unieuro.get_carriera_completa_studente (matricola integer )
+RETURNS TABLE (
+	corso varchar (100), 
+	giorno date,
+	voto integer,
+	cfu integer
+)
+LANGUAGE plpgsql
+AS $$
+	begin
+		RETURN QUERY
+			SELECT i.nome, a.giorno, s.voto   , i.cfu 
+			FROM unieuro.studentiesami s 
+			INNER JOIN unieuro.appelli a 
+			ON s.appello_id = a.appello_id 
+			INNER JOIN unieuro.insegnamenti i 
+			ON a.insegnamento_id = i.id 
+			WHERE s.studentematricola = matricola AND 
+			s.voto  IS NOT null;
+   END;
+ $$;
+
+SELECT * FROM unieuro.get_carriera_completa_studente(987180);
+
+
+
+
+-- 5 )
+-- • Produzione della carriera valida di uno studente. (cioè solo voti sufficienti, e in caso di esami ridati mostro solo l ultimo)
+
+CREATE OR REPLACE FUNCTION unieuro.get_carriera_valida_studente ( matricola integer )
+RETURNS TABLE (
+	corso varchar (100), 
+	giorno date,
+	voto integer,
+	cfu integer
+)
+LANGUAGE plpgsql
+AS $$
+	begin
+		RETURN QUERY
+			SELECT i.nome, a.giorno, s.voto   , i.cfu 
+			FROM unieuro.studentiesami s 
+			INNER JOIN unieuro.appelli a 
+			ON s.appello_id = a.appello_id 
+			INNER JOIN unieuro.insegnamenti i 
+			ON a.insegnamento_id = i.id 
+			WHERE s.studentematricola = matricola AND 
+			s.voto  >= 18 AND NOT EXISTS (
+				SELECT i2.nome, a2.giorno, s2.voto   , i2.cfu 
+				FROM unieuro.studentiesami s2 
+				INNER JOIN unieuro.appelli a2 
+				ON s2.appello_id = a2.appello_id 
+				INNER JOIN unieuro.insegnamenti i2 
+				ON a2.insegnamento_id = i2.id 
+				WHERE s2.studentematricola = matricola AND s.voto >=18 AND 
+				i2.nome = i.nome AND a2.giorno > a.giorno
+			);
+   END;
+ $$;
+
+SELECT * FROM unieuro.get_carriera_valida_studente(987180);
+
+
+
+
+
+
+-- 6 )
+-- • Produzione delle informazioni su un corso di laurea.  (corso - descrizione- docente)
+
+CREATE OR REPLACE FUNCTION unieuro.get_informazioni_cdl (cdl integer )
+RETURNS TABLE (
+	nome varchar (100), 
+	cfu integer,
+	docente_nome varchar (50),
+	docente_cognome varchar (50),
+	email varchar (50)
+)
+LANGUAGE plpgsql
+AS $$
+	begin
+		RETURN QUERY
+			SELECT i.nome , i.cfu , u.nome , u.cognome , u.email 
+			FROM unieuro.insegnamenti i
+			INNER JOIN unieuro.docenti d 
+			ON i.docente  = i.id 
+			INNER JOIN unieuro.utenti u 
+			ON d.utente = u.id 
+			WHERE i.corsodilaurea = cdl;
+   END;
+ $$;
+
+SELECT * FROM unieuro.get_informazioni_cdl(127);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
