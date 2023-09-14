@@ -42,14 +42,16 @@ esami svolti, in quale data e qual'è il voto e i cfu ottenuti per esame -->
     <div class="main-content">
         <div class="container pt-4 mt-5">
             <div class="row justify-content-between">
-                <h1>Carriera dello studente</h1>
+                <h1>Carriera completa dello studente</h1>
+                <p>Tutti gli esami dati, compresi quelli ripetuti e quelli non superati
                 <?php
                     session_start();
                     // print_r($_SESSION);
                     echo "<h2 class=\"top-buffer-s\">",$_SESSION['email'],"</h2>"
                 ?>
                 <div class="row top-buffer right-buffer" id="">
-                
+                <!-- qua forse serve un div colonna ??? -->
+
                 <table>
                     <tr>
                         <th>Esame</th>
@@ -69,7 +71,7 @@ esami svolti, in quale data e qual'è il voto e i cfu ottenuti per esame -->
                         $matricola = $row[0]['matricola'];
 
                         // $query = "select * from unieuro.get_esami_studente($1)";
-                        $query = " SELECT * FROM unieuro.get_carriera_valida_studente($1) "; 
+                        $query = " SELECT * FROM unieuro.get_carriera_completa_studente($1) "; 
                         $res = pg_prepare($dbConnect, "", $query);
                         $row = pg_fetch_all(pg_execute($dbConnect, "", array($matricola )));
 
@@ -89,12 +91,11 @@ esami svolti, in quale data e qual'è il voto e i cfu ottenuti per esame -->
                         // ora dovrei aggiungere tutti gli esami del cdl che mancano allo studente (esami del cdl che hanno
                         // voti null o magari anche minori di 18, devo decidere come gestire le insufficienze)
 
-                        
-                        ?>
+
+
+                    ?>
                 </table>
-            </div>
-            <br>
-            <a href="./carrieraCompleta.php" class="top-buffer" >Carriera completa dello studente </a>
+                </div>
             </div>
         </div>
     </div>
