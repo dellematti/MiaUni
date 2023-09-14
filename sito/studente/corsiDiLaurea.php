@@ -10,7 +10,6 @@
 
     <!-- ora che l homepage è dentro la cartella, per recuperare il css metto tutto il path -->
     <link href="http://localhost/unimia/css/cssMio.css" rel="stylesheet">
-    <link href="http://localhost/unimia/css/cssMio.css" rel="stylesheet">
 
 </head>
 
