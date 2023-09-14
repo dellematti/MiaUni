@@ -92,6 +92,7 @@
 
 
                             </div>
+                    <a href="./corsiDiLaurea.php" class="btn btn-primary btn-lg  top-buffer"  >Tutti i corsi di laurea dell ateneo </a>
                 </div>
             </div>
 

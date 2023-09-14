@@ -42,44 +42,34 @@ esami svolti, in quale data e qual'è il voto e i cfu ottenuti per esame -->
     <div class="main-content">
         <div class="container pt-4 mt-5">
             <div class="row justify-content-between">
-                <h1>Carriera dello studente</h1>
-                <?php
-                    session_start();
-                    // print_r($_SESSION);
-                    echo "<h2 class=\"top-buffer-s\">",$_SESSION['email'],"</h2>"
-                ?>
-                <div class="row top-buffer right-buffer" id="">
+                <h1>Corsi di laurea dell ateneo</h1>
+                <p>Tutti i corsi di laurea erogati dall ateneo
                 
+                <div class="row top-buffer right-buffer" id="">
+
+
+
                 <table>
                     <tr>
-                        <th>Esame</th>
-                        <th>Esito</th>
-                        <th>Data</th>
-                        <th>CFU</th>
+                        <th>Corso di laurea</th>
                     </tr>
                     <?php
+                        session_start();
                         require 'C:\xampp\htdocs\unimia\scripts\connessioneDatabase2.php';
                         $dbConnect = openConnection();
 
-                        $idUtente = $_SESSION["utente"] ;
-                        $query = "select * from unieuro.get_matricola_studente($1);";
-                        $res = pg_prepare($dbConnect, "", $query);
-                        $row = pg_fetch_all(pg_execute($dbConnect, "", array($idUtente)));
-
-                        $matricola = $row[0]['matricola'];
-
                         // $query = "select * from unieuro.get_esami_studente($1)";
-                        $query = " SELECT * FROM unieuro.get_carriera_valida_studente($1) "; 
+                        $query = " SELECT * FROM unieuro.get_corsi_di_laurea()"; 
                         $res = pg_prepare($dbConnect, "", $query);
-                        $row = pg_fetch_all(pg_execute($dbConnect, "", array($matricola )));
+                        $row = pg_fetch_all(pg_execute($dbConnect, "", array( )));
 
-                        
-                        foreach($row as $esame)  {
+                        $idUtente = $_SESSION["corsiCDL"] = $cdl['id'] ;  // corsiCDL è l id del cdl di cui voglio vedere i corsi
+                        foreach($row as $cdl)  {
+                            // <td>',$cdl['nome'],'</td>
                             echo '<tr>
-                            <td>',$esame['corso'],'</td>
-                            <td>',$esame['voto'],'</td>
-                            <td>',$esame['giorno'],'</td>
-                            <td>',$esame['cfu'],'</td>
+                            <td><a href="insegnamenti_cdl.php">', $cdl['nome'],'</a></td>
+                            <td>',$cdl['magistrale'],'</td>
+                            <td>',$cdl['descrizione'],'</td>
                             </tr>';
                         }   
                     
@@ -89,13 +79,10 @@ esami svolti, in quale data e qual'è il voto e i cfu ottenuti per esame -->
                         // ora dovrei aggiungere tutti gli esami del cdl che mancano allo studente (esami del cdl che hanno
                         // voti null o magari anche minori di 18, devo decidere come gestire le insufficienze)
 
-                        
-                        ?>
+
+
+                    ?>
                 </table>
-            </div>
-            <br>
-                <div class="d-grid gap-2 d-md-block">
-                    <a href="./carrieraCompleta.php" class="btn btn-primary btn-lg  top-buffer"  >Carriera completa dello studente </a>
                 </div>
             </div>
         </div>
