@@ -82,6 +82,10 @@ esami svolti, in quale data e qual'è il voto e i cfu ottenuti per esame -->
                     ?>
                 </table>
                 </div>
+                <div class="d-grid gap-2 d-md-block">
+                    <a href="http://localhost/unimia/sito/cambioPassword.php" class="btn btn-primary btn-lg  top-buffer"  >Clicca qui per cambiare la tua password </a>
+                </div>
+
             </div>
         </div>
     </div>
