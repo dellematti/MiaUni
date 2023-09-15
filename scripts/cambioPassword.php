@@ -1,7 +1,7 @@
 <?php
 session_start();
-print_r($_POST);
-print_r($_SESSION);
+// print_r($_POST);
+// print_r($_SESSION);
 
 if (isset($_POST["passwordPrecedente"], $_POST["password"],  $_POST["passwordConferma"]) && $_POST["password"] == $_POST["passwordConferma"]  ) {  
     $passwordPrecedente = $_POST['passwordPrecedente'];
@@ -19,13 +19,19 @@ if (isset($_POST["passwordPrecedente"], $_POST["password"],  $_POST["passwordCon
     $row = pg_fetch_all(pg_execute($dbConnect, "", array($idUtente, $passwordPrecedente, $password)));
 
     // dovrei mettere che per qualche secondo cè uno spinner e la scritta cambio password in corso
+    
 
     header('Location: ../sito/login2.php');
 }
-echo'errore';
-// qua invece dovrei mettere che per qualche secondo cè uno spinner e la scritta errore nel cambio password
+?>
 
+<body >
+    <p> ERRORE nel cambio password </p>
+    <script>
+        (async () => {
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            window.location.replace("http://localhost/unimia/sito/cambioPassword.php");
+        })();
+    </script>
+</body>
 
-// usleep( 2500000 );
-// sleep( 2500000 );
-header('Location: ../sito/studente/homepage.php');
