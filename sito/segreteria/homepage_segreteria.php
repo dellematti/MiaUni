@@ -49,7 +49,7 @@
                         echo "<h2 class=\"top-buffer-s\">",$_SESSION['email'],"</h2>"
                         ?>
                         <div class="row top-buffer right-buffer" id="">
-                            <div class="col-4  bottom-buffer" id="">
+                            <div class="col-3  bottom-buffer" id="">
                                 <div class="card cardSelezionabile bg p-3 h-100">
                                     <div class="card-body">
                                         <h5 class="card-title">Gestione utenti piattaforma</h5>
@@ -61,7 +61,7 @@
                                 </div>
                             </div>
                             <!-- card gestione CDL -->
-                            <div class="col-4  bottom-buffer" id="">
+                            <div class="col-3  bottom-buffer" id="">
                                 <div class="card cardSelezionabile bg p-3 h-100">
                                     <div class="card-body">
                                         <h5 class="card-title">Gestione corsi di laurea</h5>
@@ -73,13 +73,25 @@
                                 </div>
                             </div>
                             <!-- card gestione insegnamenti -->
-                            <div class="col-4  bottom-buffer" id="">
+                            <div class="col-3  bottom-buffer" id="">
                                 <div class="card cardSelezionabile bg p-3 h-100">
                                     <div class="card-body">
                                         <h5 class="card-title">Gestione insegnamenti</h5>
                                         <img class="card-img bg" src="https://img.freepik.com/free-icon/class_318-59679.jpg" alt="Card image cap">
                                         <a id="gestioneInsegnamenti" class="stretched-link" title="Sezione gestione insegnamenti"
                                             href="gestioneInsegnamenti.php" >
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- card gestione storici -->
+                            <div class="col-3  bottom-buffer" id="">
+                                <div class="card cardSelezionabile bg p-3 h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Storici</h5>
+                                        <img class="card-img bg" src="http://localhost/unimia/img/tables_icon.png" alt="Card image cap">
+                                        <a id="gestioneInsegnamenti" class="stretched-link" title="Sezione gestione insegnamenti"
+                                            href="storicoStudenti.php" >
                                         </a>
                                     </div>
                                 </div>
