@@ -39,41 +39,47 @@
     <div class="main-content">
         <div class="container pt-4 mt-5">
             <div class="row justify-content-between">
-                <h1>Corsi di laurea dell ateneo</h1>
-                <p>Tutti i corsi di laurea erogati dall ateneo
+                <h1>Pagina del corso</h1>
+                <p>Informazioni sull insegnamento </p>
                 <div class="row top-buffer right-buffer" id="">
 
-                <table>
-                    <tr>
-                        <th>Corso di laurea</th>
-                        <th>Cfu</th>
-                        <th>Docente</th>
-                        <th>Email docente</th>
-                    </tr>
-                    <?php
+
+                <!-- oltre alle informazioni presenti già nella pagina precedente, qua farò vedere anche le propedeuticità del corso -->
+                <?php
                         session_start();
                         require 'C:\xampp\htdocs\unimia\scripts\connessioneDatabase2.php';
-                        if(isset($_GET['cdl']) ){    // prendo dal url l id del cdl
-                            $cdl = $_GET['cdl'];
+                        if(isset($_GET['insegnamento']) ) {    // prendo dal url l id del cdl
+                            $insegnamento = $_GET['insegnamento'];
                         }
                         $dbConnect = openConnection();
                         
-                        $query = "select * from  unieuro.get_informazioni_cdl($1)"; 
+                        $query = "SELECT * FROM unieuro.get_informazioni_insegnamento($1)"; 
                         $res = pg_prepare($dbConnect, "", $query);
-                        $row = pg_fetch_all(pg_execute($dbConnect, "", array($cdl )));
+                        $row = pg_fetch_all(pg_execute($dbConnect, "", array($insegnamento )));
+
+                        echo '<h2>'.$row[0]['nome'].'</h2>';
+                        echo'<p>CFU: '.$row[0]['cfu']. '</p>' ;
+                        echo'<p>Docente: '.$row[0]['nome_docente'].' '.$row[0]['cognome_docente'].'</p>' ;
+                    ?>
+
+
+                <table class="top-buffer">
+                    <tr>
+                        <th>Propedeuticità</th>
+                    </tr>
+                    <?php
+                        
+                        $query = "SELECT * FROM unieuro.get_propedeuticità_insegnamento($1)"; 
+                        $res = pg_prepare($dbConnect, "", $query);
+                        $row = pg_fetch_all(pg_execute($dbConnect, "", array($insegnamento )));
 
                                             
-                        foreach($row as $cdl)  {
+                        foreach($row as $propedeuticità)  {
                             // <td>',$cdl['nome'],'</td>
                             echo '<tr>
-                            <td><a href="insegnamento.php?insegnamento=',$cdl['id']   ,'">', $cdl['nome'],'</a></td>
-                            <td>',$cdl['cfu'],'</td>
-                            <td>',$cdl['docente_nome']." ".$cdl['docente_cognome'],'</td>
-                            <td>',$cdl['email'],'</td>
+                            <td><a href="insegnamento.php?insegnamento=',$propedeuticità['id']   ,'">', $propedeuticità['nome'],'</a></td>
                             </tr><br>';
                         }   
-                        // si potrebbe aggiungere la pagina di informazioni del docente, clicco sul nome e si apre la pagina
-
                     ?>
                 </table>
                 </div>
