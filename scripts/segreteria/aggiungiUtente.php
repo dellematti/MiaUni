@@ -44,7 +44,7 @@ if (isset($_POST["nome"], $_POST["cognome"], $_POST["tipoUtente"] )) {   // cont
     $email = $nomeUtente . '.' . $cognomeUtente;
     if($omonimi != 0) $email = $email . $omonimi;   //se esistono omonimi modifico l email aggiungendo il numero
     if ($_POST["tipoUtente"] == "Studente") $email = $email . "@studenti.unimi.it";
-    if ($_POST["tipoUtente"] == "Docente") $email = $email . "@docente.unimi.it";
+    if ($_POST["tipoUtente"] == "Docente") $email = $email . "@docenti.unimi.it";
     
     $password = 'password';
  
