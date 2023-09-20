@@ -76,14 +76,20 @@
                                             <select id="CDL" name="cdl" class="form-control input-lg typeahead top-buffer-s">
                                                 <option value="select">Se l' utente è uno studente selezionare corso di laurea</option>
                                                 <?php
-                                                    $pdo = require 'C:\xampp\htdocs\unimia\scripts\connessioneDatabase.php';
-                                                    $query = "SELECT c.nome, c.id 
-                                                    FROM unieuro.corsidilaurea AS c";
-                                                    $data = $pdo->query($query);    
-                                                    
-                                                    foreach($data as $row) {   
-                                                        echo '<option value="',$row['id'],'">',$row['nome'],'</option>';
-                                                    }
+                                                    // $pdo = require 'C:\xampp\htdocs\unimia\scripts\connessioneDatabase.php';
+                                                    require 'C:\xampp\htdocs\unimia\scripts\connessioneDatabase2.php';
+                                                    $dbConnect = openConnection();
+                                                    $query = "SELECT c.nome, c.id, c.magistrale                                                     
+                                                    FROM unieuro.corsidilaurea AS c"; 
+                                                    $res = pg_prepare($dbConnect, "", $query);
+                                                    $row = pg_fetch_all(pg_execute($dbConnect, "", array( )));
+                                                 
+                                                    foreach($row as $cdl) { 
+                                                        if ($cdl['magistrale'] == 'f')
+                                                            echo '<option value="',$cdl['id'],'">',$cdl['nome'],'</option>';
+                                                        else 
+                                                            echo '<option value="',$cdl['id'],'">',$cdl['nome'].' - magistrale','</option>';
+                                                        }
                                                 ?>
 
                                             </select>
