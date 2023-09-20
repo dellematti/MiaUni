@@ -47,11 +47,13 @@ CREATE TABLE uniEuro.insegnamenti (
     nome varchar (255) not NULL check (nome != ''),
     anno int not NULL check ( anno >= 0 and anno < 5 ),
     -- qua dovrò fare un trigger, se la laurea è magistrale, l anno sarà solo 0 oppure 1
-    cfu int not NULL check ( cfu > 0 ),
+    cfu int not NULL check ( cfu > 0 and cfu <=  30  ),
     corsoDiLaurea serial  REFERENCES uniEuro.corsiDiLaurea(id),   -- le due foreign key devono essere not null ?
     docente serial REFERENCES uniEuro.docenti(utente)
 );
 
+ALTER TABLE unieuro.insegnamenti 
+ADD CHECK (cfu > 0 AND cfu <= 30);
 
 CREATE TABLE uniEuro.appelli (     -- potrei non avere appello_id perche ogni record viene identificato univocamente da insegnamento e data
 	appello_id serial PRIMARY KEY ,  -- pero se dovessi avere due appelli della stessa materia lo stesso giorno ho un problema
@@ -98,11 +100,19 @@ CREATE TABLE uniEuro.storicoStudenti(
 
 
 CREATE TABLE uniEuro.storicoVoti(
-    studenteMatricola serial  REFERENCES uniEuro.studenti(matricola),  -- prendo dalla tabella studente o storico studente?
+    studenteMatricola serial  REFERENCES uniEuro.storicoStudenti(matricola),  -- prendo dalla tabella studente o storico studente?
     appello_id serial  REFERENCES uniEuro.appelli(appello_id),
     voto int NOT NULL,
     PRIMARY KEY(studenteMatricola, appello_id)
 );
+
+/*
+ALTER TABLE uniEuro.storicoVoti
+DROP CONSTRAINT storicovoti_studentematricola_fkey;
+ALTER TABLE uniEuro.storicoVoti
+ADD FOREIGN KEY (studentematricola) REFERENCES unieuro.storicoStudenti(matricola);
+*/
+
 
 
 -- ORA METTO UN PO DI RECORD A CASO PER PROVARE IL DATABASE
@@ -422,7 +432,7 @@ $$;
 
 -- CARRIERA STUDENTE
 
---funzione che restituisce tutti gli esami sostenuti da uno studente (esami con esito >= 18)
+--funzione che restituisce tutti gli esami sostenuti da uno studente (esami con esito >= 18)    -- mi serve ora che ho le altre due' (carriera completa e parz)
 CREATE OR REPLACE FUNCTION unieuro.get_esami_studente ( matricola_studente integer )
 RETURNS TABLE (
 	nome varchar (50),
@@ -518,22 +528,24 @@ select * from unieuro.get_utenti_non_segreteria();
 CREATE OR REPLACE PROCEDURE cancella_utente ( id_utente integer)
 AS $$  
 BEGIN 
+	
 	DELETE FROM unieuro.segreteria se                                            -- PROCEDURA CON PiU QUERY, SINTASSI DIVERSA
 	WHERE se.utente = id_utente;
 
 	DELETE FROM unieuro.docenti d                                            
 	WHERE d.utente  = id_utente;
 
+
 	DELETE FROM unieuro.studenti s                                            
 	WHERE s.utente = id_utente;
 	
 	DELETE FROM unieuro.utenti u
-	WHERE u.id = id_utente;
+	WHERE u.id = id_utente ;
 
 END;
 $$ LANGUAGE plpgsql;
 -- prova
-CALL cancella_utente ( 4 );
+CALL cancella_utente ( 6 );
 
 
 
@@ -545,6 +557,52 @@ CALL cancella_utente ( 4 );
 	                                                        -- TRIGGER
 
 
+-- 1 )
+-- storico studenti ed esami
+-- quando uno studente viene cancellato, per prima cosa (appena prima di cancellarlo) devo selezionare le sue informazioni ed inserirle nella tabella
+-- storico studenti. Dopo aver fatto questo devo selezionare tutti gli esami della matricola che ho appena spostato,e inserirli nella tabella
+-- storico esami, devo subito dopo cancellare gli esami dalla tabella studentiesami.
+-- FARE ATTENZIONE A COME VIENE ASSEGNATA LA MATRICOLA E L ID UTENTE, DOVRO' TENERE IN CONSIDERAZIONE ANCHE LO STORICO STUDENTI !!!!!!
+
+	CREATE TRIGGER trasferimenti_negli_storico BEFORE DELETE ON unieuro.studenti  
+	FOR EACH ROW EXECUTE FUNCTION unieuro.sposta_negli_storici();
+
+	-- DROP TRIGGER trasferimenti_negli_storico ON unieuro.studenti;
+
+	CREATE OR REPLACE FUNCTION unieuro.sposta_negli_storici()
+	   RETURNS TRIGGER 
+	   LANGUAGE PLPGSQL
+	AS $$
+	BEGIN
+
+		     INSERT INTO unieuro.storicostudenti 
+         -- ( matricola,  cdl, email, pswrd , nome, cognome ) 
+    -- VALUES 
+     --     ( 
+          SELECT s.matricola , s.cdl , u.email , u.pswrd ,u.nome , u.cognome 
+          FROM unieuro.utenti u
+          INNER JOIN unieuro.studenti s 
+          ON s.utente = u.id 
+          WHERE s.matricola = OLD.matricola;
+     --     ) 
+         
+         -- ora metto studentiesami in storicovoti, poi dopo potrò cancellare lo studente e l utente
+         INSERT INTO unieuro.storicovoti 
+         SELECT *
+         FROM unieuro.studentiesami s
+         WHERE s.studentematricola = OLD.matricola AND s.voto IS NOT NULL ;
+        
+        DELETE FROM unieuro.studentiesami s
+        WHERE s.studentematricola = OLD.matricola; 
+         
+
+
+
+	RETURN OLD ;
+	END;
+	$$
+	
+	
 
 -- 2 )
 -- Correttezza delle iscrizioni agli esami. 
@@ -724,6 +782,7 @@ SELECT * FROM unieuro.get_carriera_valida_studente(987180);
 CREATE OR REPLACE FUNCTION unieuro.get_informazioni_cdl (cdl integer )
 RETURNS TABLE (
 	nome varchar (100), 
+	id integer,
 	cfu integer,
 	docente_nome varchar (50),
 	docente_cognome varchar (50),
@@ -733,10 +792,10 @@ LANGUAGE plpgsql
 AS $$
 	begin
 		RETURN QUERY
-			SELECT i.nome , i.cfu , u.nome , u.cognome , u.email 
+			SELECT i.nome, i.id , i.cfu , u.nome , u.cognome , u.email  
 			FROM unieuro.insegnamenti i
 			INNER JOIN unieuro.docenti d 
-			ON i.docente  = i.id 
+			ON i.docente  = d.utente
 			INNER JOIN unieuro.utenti u 
 			ON d.utente = u.id 
 			WHERE i.corsodilaurea = cdl;
@@ -748,6 +807,27 @@ SELECT * FROM unieuro.get_informazioni_cdl(127);
 
 
 
+--                                                                            altre funzioni
+
+
+-- funzione che restituisce tutti i corsi di laurea erogati dall ateneo
+CREATE OR REPLACE FUNCTION unieuro.get_corsi_di_laurea ( )
+RETURNS TABLE (
+	nome varchar (100), 
+	magistrale boolean,
+	descrizione varchar (250),
+	id integer
+)
+LANGUAGE plpgsql
+AS $$
+	begin
+		RETURN QUERY
+			SELECT c.nome, c.magistrale, c.descrizione, c.id 
+			FROM unieuro.corsidilaurea c ;
+   END;
+ $$;
+
+SELECT * FROM unieuro.get_corsi_di_laurea();
 
 
 
@@ -755,8 +835,248 @@ SELECT * FROM unieuro.get_informazioni_cdl(127);
 
 
 
+-- funzione che restituisce la media di uno studente
+CREATE OR REPLACE FUNCTION unieuro.get_media_studente ( matricola integer )
+RETURNS TABLE (
+	    media float
+)
+LANGUAGE plpgsql
+AS $$
+	begin
+		RETURN QUERY
+			SELECT   CAST( sum (voto*cfu)   AS float )  /  CAST ( sum(cfu)  AS float )  AS media  FROM unieuro.get_carriera_valida_studente(matricola);		
+	 END;
+ $$;
+-- per provare la funzione
+select * from unieuro.get_media_studente(987180);
+  
+
+
+
+-- funzione che restituisce i CFU di uno studente
+CREATE OR REPLACE FUNCTION unieuro.get_cfu_studente ( matricola integer )
+RETURNS TABLE (
+	    cfuTotali int8
+)
+LANGUAGE plpgsql
+AS $$
+	begin
+		RETURN QUERY
+			SELECT   sum(cfu)  AS cfuTotali  FROM unieuro.get_carriera_valida_studente(matricola);		
+	 END;
+ $$;
+-- per provare la funzione
+select * from unieuro.get_cfu_studente(987180);
 
 
 
 
 
+-- funzione che restituisce tutti gli esami che uno studente deve ancora svolgere
+CREATE OR REPLACE FUNCTION unieuro.get_esami_mancanti ( matricola_studente integer )
+RETURNS TABLE (
+	    nome varchar (50) 
+)
+LANGUAGE plpgsql
+AS $$
+	begin
+		RETURN QUERY
+			SELECT i.nome
+			FROM unieuro.insegnamenti i 
+			WHERE i.corsodilaurea = (
+				SELECT s.cdl 
+				FROM unieuro.studenti s 
+				WHERE s.matricola = matricola_studente
+			) EXCEPT (            --sarebbe meglio fare l EXCEPT basandomi sul id del insegnamento e NON sul nome
+				SELECT corso FROM unieuro.get_carriera_valida_studente(matricola_studente)
+			);
+	 END;
+ $$;
+
+SELECT * FROM unieuro.get_esami_mancanti(987180);
+
+
+
+
+-- procedura che modifica la password dell utente, (riceve anche la password da modificare e controlla sia corretta)
+CREATE OR REPLACE PROCEDURE modifica_password ( utente integer, password_precedente varchar (40), password_nuova varchar (40)  )
+--LANGUAGE SQL
+LANGUAGE plpgsql
+AS $$
+BEGIN 
+	IF EXISTS (
+		SELECT *
+		FROM unieuro.utenti u 
+		WHERE u.id = utente AND u.pswrd = password_precedente
+	) THEN 
+		UPDATE  unieuro.utenti 
+		SET pswrd = password_nuova
+		WHERE id = utente;
+		-- WHERE u.id = utente;
+	
+	END IF;
+END ;
+$$;
+
+CALL modifica_password ( 1, 'password1', 'password'  );
+
+
+
+
+-- funzione che restituisce true se la matricola è iscritta ad un determinato appello
+CREATE OR REPLACE FUNCTION unieuro.iscrizione_appello_presente ( matricola integer, appello integer )
+RETURNS boolean
+LANGUAGE plpgsql
+AS $$
+	begin
+		RETURN EXISTS (
+			SELECT *
+			FROM unieuro.studentiesami s
+			WHERE s.studentematricola = matricola AND s.appello_id = appello
+		) ;
+	END;
+ $$;
+
+SELECT * FROM unieuro.iscrizione_appello_presente(2, 3); -- si
+SELECT * FROM unieuro.iscrizione_appello_presente(2, 6); -- si
+SELECT * FROM unieuro.iscrizione_appello_presente(2, 4); -- no
+
+
+
+
+
+-- funzione che restituisce true se la matricola ha un voto in un determinato appello
+CREATE OR REPLACE FUNCTION unieuro.voto_appello_presente ( matricola integer, appello integer )
+RETURNS boolean
+LANGUAGE plpgsql
+AS $$
+	begin
+		RETURN EXISTS (
+			SELECT *
+			FROM unieuro.studentiesami s
+			WHERE s.studentematricola = matricola AND s.appello_id = appello
+			    AND s.voto IS NOT null
+		) ;
+	END;
+ $$;
+
+SELECT * FROM unieuro.voto_appello_presente(2, 6);
+
+
+
+
+-- funzione che restituisce tutti gli studenti presenti all interno dello storico studenti
+CREATE OR REPLACE FUNCTION unieuro.get_storico_studenti ( )
+RETURNS TABLE (
+	    nome varchar (50),
+	    cognome varchar (50),
+	    matricola integer,
+	    corso_di_laurea varchar(50),
+	    magistrale boolean
+)
+LANGUAGE plpgsql
+AS $$
+	begin
+		RETURN QUERY
+			SELECT s.nome , s.cognome , s.matricola , c.nome , c.magistrale 
+			FROM unieuro.storicostudenti s 
+			INNER JOIN unieuro.corsidilaurea c 
+			ON s.cdl = c.id ;
+	 END;
+ $$;
+
+SELECT * FROM unieuro.get_storico_studenti();
+
+
+
+-- funzione che restituisce i voti di un ex studente ( i voti sono presenti nello storico voti)
+CREATE OR REPLACE FUNCTION unieuro.get_storico_voti (matricola integer )
+RETURNS TABLE (
+	    corso varchar (50),
+	    voto integer,
+	    giorno date,
+	    cfu integer,
+	    nome varchar (50),
+	    cognome varchar (50),
+	    email varchar (50)
+)
+LANGUAGE plpgsql
+AS $$
+	begin
+		RETURN QUERY
+			SELECT i.nome , s.voto ,a.giorno , i.cfu, u.nome , u.cognome , u.email  
+			FROM unieuro.storicovoti  s
+			INNER JOIN unieuro.appelli a 
+			ON s.appello_id = a.appello_id 
+			INNER JOIN unieuro.insegnamenti i 
+			ON a.insegnamento_id = i.id 
+			INNER JOIN unieuro.docenti d 
+			ON i.docente = d.utente 
+			INNER JOIN unieuro.utenti u 
+			ON d.utente = u.id 
+			WHERE s.studentematricola = matricola ;
+		
+	 END;
+ $$;
+
+SELECT * FROM unieuro.get_storico_voti(2);
+
+		
+
+
+
+
+-- funzione che dato l' id di un insegnamento restituisce le relative informazioni
+CREATE OR REPLACE FUNCTION unieuro.get_informazioni_insegnamento (insegnamento_id integer )
+RETURNS TABLE (
+	    nome varchar (50),
+	    cfu integer,
+	    corso_di_laurea varchar (50),
+	    magistrale boolean,
+	    nome_docente varchar (50),
+	    cognome_docente varchar (50),
+	    email varchar (50)
+)
+LANGUAGE plpgsql
+AS $$
+	begin
+		RETURN QUERY
+			SELECT i.nome, i.cfu , c.nome AS corso_di_laurea, c.magistrale , u.nome , u.cognome , u.email 
+			FROM unieuro.insegnamenti i 
+			INNER JOIN unieuro.utenti u 
+			ON i.docente = u.id
+			INNER JOIN unieuro.corsidilaurea c 
+			ON i.corsodilaurea = c.id
+			WHERE i.id = insegnamento_id ;
+	 END;
+ $$;
+
+ 
+SELECT * FROM unieuro.get_informazioni_insegnamento(4);
+
+
+
+
+-- funzione che dato l id di un insegnamento restituisce le sue propedeuticità
+CREATE OR REPLACE FUNCTION unieuro.get_propedeuticità_insegnamento (insegnamento_id integer )
+RETURNS TABLE (
+	    nome varchar (50),
+	    id integer
+)
+LANGUAGE plpgsql
+AS $$
+	begin
+		RETURN QUERY
+			SELECT i.nome , i.id 
+			FROM unieuro.propedeuticità p
+			INNER JOIN unieuro.insegnamenti i 
+			ON p.insegnamento = i.id 
+			WHERE p.propedeuticoa = insegnamento_id;
+	 END;
+ $$;
+
+SELECT * FROM unieuro.get_propedeuticità_insegnamento(4);
+
+
+
+		
