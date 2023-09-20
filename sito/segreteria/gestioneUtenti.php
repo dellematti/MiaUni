@@ -79,7 +79,7 @@
                                         <h5 class="card-title">modifica utente</h5>
                                         <img class="card-img bg" src="http://localhost/unimia/img/modify.png" alt="Card image cap">
                                         <a id="gestioneInsegnamenti" class="stretched-link" title="Sezione gestione insegnamenti"
-                                            href="" >
+                                            href="modificaUtente.php" >
                                             <!-- per modifica utente potrei mettere una pagina che fa vedere le informazioni
                                             attuali dell utente, e un form in cui rimetterle tutte -->
                                         </a>
