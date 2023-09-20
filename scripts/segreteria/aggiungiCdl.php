@@ -4,38 +4,31 @@ session_start();
 
 // print_r($_SESSION);
 
-if (isset($_POST["nome"], $_POST["descrizione"], $_POST["tipoCdl"] )) {   // controllo se ci sono nome e cognome e tipo utente
+if (isset($_POST["nome"], $_POST["descrizione"], $_POST["tipoCdl"] )) {  
 
-    $pdo = require 'C:\xampp\htdocs\unimia\scripts\connessioneDatabase.php';
+    require 'C:\xampp\htdocs\unimia\scripts\connessioneDatabase2.php';
+    $dbConnect = openConnection();
+   
+    // devo generare l id
+    $query = " select max(c.id) from unieuro.corsidilaurea c "; 
+    $res = pg_prepare($dbConnect, "", $query);
+    $row = pg_fetch_all(pg_execute($dbConnect, "", array()));
+    $id = $row[0]['max'] + 1 ;
     
+
     $nomeCdl = strtolower($_POST["nome"]);    
-
-    $query = "SELECT count(*) AS numero_cdl
-    FROM unieuro.corsidilaurea ";
-    $data = $pdo->query($query); 
-    $idCdl;   
-    foreach($data as $row) {     // devo fare ogni volta sta cosa, se so già che ho una row sola?
-        $idCdl = $row['numero_cdl'] + 1;
-    }
-
     $magistrale;
-    if ($_POST["tipoCdl"] == 'magistrale') $magistrale = TRUE;
-    else $magistrale = FALSE;
+    // if ($_POST["tipoCdl"] == 'magistrale') $magistrale = true;
+    // else $magistrale = false;
+    if ($_POST["tipoCdl"] == 'magistrale') $magistrale = 't';   // pg execute per i booleani non vuole true/false ma 't' 'f'
+    else $magistrale = 'f';
 
 
-    // prima di mettere il cdl, potrei controllare che non esista già un corso con lo stesso nome (o potrei modificare il db per
-    // mettere anche il nome e il boolean magistrale come chiave della tabella cdl)
 
-    if ( $magistrale) 
-        $query = "INSERT INTO unieuro.corsidilaurea 
-        VALUES ({$idCdl}, true, '{$_POST["descrizione"]}', '{$nomeCdl}')";
-    else 
-        $query = "INSERT INTO unieuro.corsidilaurea 
-        VALUES ({$idCdl}, false, '{$_POST["descrizione"]}', '{$nomeCdl}')";
-
-    $data = $pdo->query($query); 
+    $query = " CALL aggiungere_corso_di_laurea ($1,$2,$3,$4 ); "; 
+    $res = pg_prepare($dbConnect, "", $query);
+    $row = pg_fetch_all(pg_execute($dbConnect, "", array( $id, $magistrale, $_POST["descrizione"], $nomeCdl)));
 
 }
 header('Location: http://localhost/unimia/sito/segreteria/homepage_segreteria.php');
-
 ?>
