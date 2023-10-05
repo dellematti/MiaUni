@@ -68,9 +68,10 @@
                                                 aria-label="Cognome" value="" aria-describedby="basic-addon1">
                                             <br>
                                             <select id="tipo" name="tipoUtente" class="form-control input-lg typeahead top-buffer-s">
-                                                <option value="select">Seleziona tra studente e docente</option>
+                                                <option value="select">Seleziona tra studente, docente e segreteria</option>
                                                 <option value="Studente">Studente</option>
                                                 <option value="Docente">Docente</option>
+                                                <option value="Segreteria">Segreteria</option>
                                             </select>
                                             <br>
                                             <select id="CDL" name="cdl" class="form-control input-lg typeahead top-buffer-s">
@@ -95,7 +96,7 @@
                                             </select>
                                             <br>
                                             <input id="ufficio"  class="form-control input-lg typeahead top-buffer-s" name="ufficio" type="text" 
-                                                class="form-control bg-transparent rounded-0 my-4" placeholder="Se l'utente è un docente, inserire l'indirizzo dell' ufficio" 
+                                                class="form-control bg-transparent rounded-0 my-4" placeholder="Se l'utente è un docente o segreteria, inserire l'indirizzo dell' ufficio" 
                                                 aria-label="Ufficio" value="" aria-describedby="basic-addon1">
                                             <br>
                                             

@@ -31,7 +31,7 @@ esami svolti, in quale data e qual'è il voto e i cfu ottenuti per esame -->
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0"> 
                     <li class="nav-item">
-                        <a class="nav-link active" id="uni" aria-current="page" href="/">Uni<span id ="euro">Euro</span></a>
+                        <a class="nav-link active" id="uni" aria-current="page" href="/">Mia<span id ="euro">Uni</span></a>
                     </li>
                 </ul>
             </div>

@@ -12,7 +12,7 @@
     <header class="header" role="banner">
         <div class="logo-container container-fluid">
             <div>
-                <a class="nav-link active" id="uni" aria-current="page" href="/">Uni<span id="euro">Euro</span></a>
+                <a class="nav-link active" id="uni" aria-current="page" href="/">Mia<span id="euro">Uni</span></a>
             </div>
         </div>
     </header>
@@ -26,7 +26,7 @@
                 <form method="POST" action="../scripts/loginS.php">
                     <div class="form-group" >
                         Inserisci le tue credenziali per accedere ai servizi dell&#39;Università degli
-                        Studi di UniEuro. Tutti i campi sono obbligatori.
+                        Studi di MiaUni. Tutti i campi sono obbligatori.
                         <input id="email"  class="form-control input-lg typeahead top-buffer-s" name="email" type="email" class="form-control bg-transparent rounded-0 my-4" placeholder="Email" 
                             aria-label="Email" value="mattia.delledonne@studenti.unimi.it" aria-describedby="basic-addon1">
                         <br>
@@ -51,10 +51,9 @@
                 </li>
             </ul>
         </nav>
-        <p class="firma">Università degli studi di Milano</p>
-        <address>Via Celoria 18 - 20122 Milano</address>
+        <p class="firma">Università degli studi di Informatica</p>
         <p>
-            <a href="#">Assistenza uniEuro</a>
+            <a href="#">Assistenza MiaUni</a>
         </p>
     </footer>
 </body>

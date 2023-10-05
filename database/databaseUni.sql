@@ -7,9 +7,9 @@ CREATE TABLE uniEuro.corsiDiLaurea (
     id serial PRIMARY KEY,
     magistrale boolean NOT NULL,
     descrizione varchar NOT NULL CHECK (descrizione != ''),
-    nome varchar NOT  NULL CHECK  (nome != '')
+    nome varchar NOT  NULL CHECK  (nome != ''),
+    UNIQUE(magistrale,nome)
 );
-
 
 
 CREATE TABLE uniEuro.utenti (
@@ -106,61 +106,8 @@ CREATE TABLE uniEuro.storicoVoti(
     PRIMARY KEY(studenteMatricola, appello_id)
 );
 
-/*
-ALTER TABLE uniEuro.storicoVoti
-DROP CONSTRAINT storicovoti_studentematricola_fkey;
-ALTER TABLE uniEuro.storicoVoti
-ADD FOREIGN KEY (studentematricola) REFERENCES unieuro.storicoStudenti(matricola);
-*/
 
 
-
--- ORA METTO UN PO DI RECORD A CASO PER PROVARE IL DATABASE
-
-
-
-INSERT INTO unieuro.utenti 
-VALUES (1, 'mattia.delledonne@studenti.unimi.it', 'password', 'mattia', 'delledonne');
-
-
-
-INSERT INTO unieuro.corsidilaurea 
-VALUES (127, FALSE, 'Laurea triennale
-180 Crediti
-Accesso Programmato
-3 Anni
-Sede Milano
-Lingua Italiano', 'Informatica');
-
-INSERT INTO unieuro.studenti 
-VALUES (987180, 127, 1);     -- 127 è l id del corso di laurea di informatica,   1 invece è l id dell utente
-
-
-
-SELECT *
-FROM unieuro.studenti AS s
-INNER JOIN unieuro.utenti AS u ON s.utente = u.id ;      -- così ottengo tutte le informazioni di uno studente
-
-
-INSERT INTO unieuro.utenti 
-VALUES (2, 'giovanni.pighizzini@docenti.unimi.it', 'password', 'Giovanni', 'Pighizzini');
-
-
-INSERT INTO unieuro.docenti 
-VALUES (2, 'Via Celoria 18 quinto piano');
-
-
-INSERT INTO unieuro.insegnamenti 
-VALUES (1, 'Algoritmi e strutture dati', 2, 12, 127, 2); -- 2 anno, 12 cfu, cdl 127, il docente è l utente 4
-
-
-
-INSERT INTO unieuro.appelli 
-VALUES (1, 1, to_date('05-03-2023','dd-mm-yyyy'));    -- il primo 1 è l id dell appello, il secondo 1 è l id dell insegnamento    ogni insegnamento ha diversi appelli identificati dall id
-                                                      -- IMPORTANTE l id dell appello è unico indipendentemente dalla materia; NON esiste appello con id=1 sia in algoritmi che in prog
-
-INSERT INTO unieuro.studentiesami 
-VALUES ( 987180, 1  );              -- metto la matricola e l id dell appello
 
 
 -- se ora voglio vedere tutti gli esami di mattia delle donne:
@@ -178,14 +125,6 @@ INNER JOIN unieuro.studenti AS s ON s.utente = u.id
 INNER JOIN unieuro.corsidilaurea AS c ON s.cdl = c.id 
 WHERE u.email ='mattia.delledonne@studenti.unimi.it' ;
 
-
-
--- metto un utente della segreteria
-INSERT INTO unieuro.utenti 
-VALUES (3, 'luigi.pepe@segreteria.unimi.it', 'password', 'Luigi', 'Pepe');
-
-INSERT INTO unieuro.segreteria 
-VALUES (3, 'Via Celoria 18');
 
 
 --devo trovare tutti i cdl
@@ -273,50 +212,13 @@ LANGUAGE SQL
 AS $$
 UPDATE unieuro.studentiesami 
 SET voto = voto_esame
-WHERE studentematricola = matricola AND appello_id = appello;
+WHERE studentematricola = matricola AND appello_id = appello;   -- potrei controllare anche che il voto sia effettivamente NULL, altrimenti fa l UPDATE di un voto già presente
 $$;
 
 CALL inserire_voto ( parametri );
 
--- trigger in cui controllo che il record sia effettivamente senza voto 
-CREATE TRIGGER voto_già_presente BEFORE UPDATE ON unieuro.studentiesami 
-FOR EACH ROW
-BEGIN
-        IF old.voto IS NOT NULL THEN
-        	--raise_application_error(-20111,'Can''t change the city for this supplier!');
-                end;
-        END IF;
-END;//
 
-
-
-create or replace trigger voto_già_presente
-      before update on unieuro.studentiesami
-      for each row
-    declare
-      valore_voto number;
-    begin
-      select voto
-        INTO valore_voto
-        from unieuro.studentiesami s
-      where s.matricola = :new.s.matricola;
- 
-     if valore_voto IS NOT null then
-        raise_application_error(-20000, 'Update table failed. Row to be update is not found.');
-     end if;
-   end;
- 
-
-
-
-
---                                     CONTROLLARE IL TRIGGER PRECEDENTE !!!!!!! non va ancora bene   !!!!!
- 
-
-
-  
-  
-  
+    
   
   --                               STUDENTE
   
@@ -375,13 +277,13 @@ AS $$
   WHERE i.corsodilaurea != (        
   	SELECT s.cdl 
   	FROM unieuro.studenti s 
-  	WHERE s.matricola = 987180
+  	WHERE s.matricola = matricola_studente
   );
 	 END;
  $$;
 
 -- per provare la funzione
-select appello_id, nome, giorno, cdl from unieuro.get_appelli_cdl_non_studente(987180);
+select appello_id, nome, giorno, cdl from unieuro.get_appelli_cdl_non_studente(1);
   
 
 
@@ -485,8 +387,6 @@ AS $$
     FROM unieuro.utenti as u;
 	 END;
  $$;
--- se volessi anche far vedere se l utente è studente docente o segreteria, potrei aggiungnere nella query dei where not exists, se l utente
--- non esiste nella tabella docenti e segreteria allora è studente
 
 -- per provare la funzione
 select * from unieuro.get_utenti();
@@ -834,7 +734,6 @@ SELECT * FROM unieuro.get_corsi_di_laurea();
 
 
 
-
 -- funzione che restituisce la media di uno studente
 CREATE OR REPLACE FUNCTION unieuro.get_media_studente ( matricola integer )
 RETURNS TABLE (
@@ -899,6 +798,7 @@ SELECT * FROM unieuro.get_esami_mancanti(987180);
 
 
 -- procedura che modifica la password dell utente, (riceve anche la password da modificare e controlla sia corretta)
+-- questa procedura sarà utilizzata dall utente e non dalla segreteria (la segreteria non dovrà controllare anche la password precedente)
 CREATE OR REPLACE PROCEDURE modifica_password ( utente integer, password_precedente varchar (40), password_nuova varchar (40)  )
 --LANGUAGE SQL
 LANGUAGE plpgsql
@@ -907,10 +807,10 @@ BEGIN
 	IF EXISTS (
 		SELECT *
 		FROM unieuro.utenti u 
-		WHERE u.id = utente AND u.pswrd = password_precedente
+		WHERE u.id = utente AND u.pswrd =  md5(password_precedente) 
 	) THEN 
 		UPDATE  unieuro.utenti 
-		SET pswrd = password_nuova
+		SET pswrd = md5(password_nuova)  
 		WHERE id = utente;
 		-- WHERE u.id = utente;
 	
@@ -1079,4 +979,353 @@ SELECT * FROM unieuro.get_propedeuticità_insegnamento(4);
 
 
 
+
+-- procedura che inserisce un corso di laurea all interno del database
+CREATE PROCEDURE aggiungere_corso_di_laurea ( id_corso_di_laurea integer, magistrale boolean, descrizione varchar(1000), nome varchar(50) )
+LANGUAGE SQL
+AS $$
+	INSERT INTO unieuro.corsidilaurea 
+	VALUES (id_corso_di_laurea, magistrale, descrizione, nome);
+$$;
+
+CALL aggiungere_corso_di_laurea (4, TRUE, 'Il corso di laurea magistrale si propone dunque di formare professionisti, dotati di competenze analitiche e operative di alto livello, ma anche caratterizzati da una visione aperta e critica dei problemi connessi all ''adozione e all''uso delle tecnologie informatiche.', 'Informatica' );
+
+
+
+
+
+-- procedura che aggiorna il nome di un utente
+CREATE OR REPLACE PROCEDURE aggiorna_nome ( id_utente integer, nuovo_nome varchar(50) )
+LANGUAGE plpgsql
+AS $$
+BEGIN
+		UPDATE  unieuro.utenti 
+		SET nome = nuovo_nome
+		WHERE id = id_utente;
+	END;
+$$;
+
+CALL aggiorna_nome (6, 'beatrice' );
+
+
+
+-- procedura che aggiorna il cognome di un utente
+CREATE OR REPLACE PROCEDURE aggiorna_cognome ( id_utente integer, nuovo_cognome varchar(50) )
+LANGUAGE plpgsql
+AS $$
+BEGIN
+		UPDATE  unieuro.utenti 
+		SET cognome = nuovo_cognome
+		WHERE id = id_utente;
+	END;
+$$;
+
+CALL aggiorna_cognome (6, 'palanno' );
+
+
+-- procedura che aggiorna l' email di un utente  (controllo che l email sia del dominio corretto)
+CREATE OR REPLACE PROCEDURE aggiorna_email ( id_utente integer, nuova_email varchar(50) )
+LANGUAGE plpgsql
+AS $$
+BEGIN
+		IF nuova_email NOT LIKE '%@studenti.unimi.it%' AND nuova_email NOT LIKE '%@docenti.unimi.it%'   THEN 
+			raise exception 'L email non è del dominio corretto';  
+		END IF ;
+	
+		UPDATE  unieuro.utenti 
+		SET email = nuova_email
+		WHERE id = id_utente;
+	END;
+$$;
+
+CALL aggiorna_email (6, 'Beatrice.Palano@docenti.unimi.it' );
+
+
+
+-- procedura che aggiorna la password di un utente
+CREATE OR REPLACE PROCEDURE aggiorna_password ( id_utente integer, nuova_password varchar(50) )
+LANGUAGE plpgsql
+AS $$
+BEGIN
+		UPDATE  unieuro.utenti 
+		SET pswrd =  md5(nuova_password)
+		-- SET pswrd = HASHBYTES('SHA1', nuova_password)   -- devo salvarla hashata
+
+		WHERE id = id_utente;
+	END;
+$$;
+
+CALL aggiorna_password (6, 'password' );
+
+
+
+
+
+
+
+-- funzione che restituisce la matricola del prossimo studente (da usare in fase di registrazione di uno studente)
+CREATE OR REPLACE FUNCTION unieuro.get_prossima_matricola ( )
+RETURNS TABLE (
+	    matricola integer
+)
+LANGUAGE plpgsql
+AS $$
+	begin
+		RETURN QUERY
 		
+		SELECT max(matricole.matricola) + 1
+		FROM (
+			SELECT s.matricola 
+			FROM unieuro.studenti s
+			UNION 
+			SELECT s2.matricola 
+			FROM unieuro.storicostudenti s2 
+			) AS matricole
+			;
+	 END;
+ $$;
+
+SELECT * FROM unieuro.get_prossima_matricola();
+
+
+
+
+--funzione che restituisce tutti gli altri utenti (a parte l utente loggato)
+CREATE OR REPLACE FUNCTION unieuro.get_altri_utenti (id_utente_loggato integer )
+RETURNS TABLE (
+	id_utente integer,
+    nome varchar (30), 
+    cognome varchar(30)
+)
+LANGUAGE plpgsql
+AS $$
+	begin
+		RETURN QUERY
+    SELECT u.id , u.nome, u.cognome
+    FROM unieuro.utenti as u
+   	WHERE u.id != id_utente_loggato;
+	 END;
+ $$;
+
+-- per provare la funzione
+select * from unieuro.get_altri_utenti(1);
+
+
+
+
+
+		
+
+
+
+-- popolo il database
+-- dump
+
+
+
+
+
+
+
+
+--utenti
+INSERT INTO unieuro.utenti
+(id, email, pswrd, nome, cognome)
+VALUES(2, 'giovanni.pighizzini@docenti.unimi.it', 'password', 'Giovanni', 'Pighizzini');
+INSERT INTO unieuro.utenti
+(id, email, pswrd, nome, cognome)
+VALUES(3, 'luigi.pepe@segreteria.unimi.it', 'password', 'Luigi', 'Pepe');
+INSERT INTO unieuro.utenti
+(id, email, pswrd, nome, cognome)
+VALUES(4, 'massimo.santini@docenti.unimi.it', 'password', 'Massimo', 'Santini');
+INSERT INTO unieuro.utenti
+(id, email, pswrd, nome, cognome)
+VALUES(5, 'paolo.boldi@docenti.unimi.it', 'password', 'Paolo', 'Boldi');
+INSERT INTO unieuro.utenti
+(id, email, pswrd, nome, cognome)
+VALUES(1, 'mattia.delledonne@studenti.unimi.it', 'password', 'mattia', 'delledonne');
+INSERT INTO unieuro.utenti
+(id, email, pswrd, nome, cognome)
+VALUES(7, 'marco.aristotele@docenti.unimi.it', 'password', 'marco', 'aristotele');
+INSERT INTO unieuro.utenti
+(id, email, pswrd, nome, cognome)
+VALUES(8, 'donida.ruggero@docenti.unimi.it', 'password', 'donida', 'ruggero');
+INSERT INTO unieuro.utenti
+(id, email, pswrd, nome, cognome)
+VALUES(6, 'beatrice.palano@docenti.unimi.it', 'password1', 'beatrice', 'palano');
+INSERT INTO unieuro.utenti
+(id, email, pswrd, nome, cognome)
+VALUES(9, 'stefano.aguzzoli@docenti.unimi.it', 'password', 'stefano', 'aguzzoli');
+INSERT INTO unieuro.utenti
+(id, email, pswrd, nome, cognome)
+VALUES(12, 'luca.cutelle@studenti.unimi.it', 'password', 'luca', 'cutelle');
+
+-- corsi di laurea
+INSERT INTO unieuro.corsidilaurea
+(id, magistrale, descrizione, nome)
+VALUES(2, false, 'Laurea Triennale 180 crediti', 'Filosofia');
+INSERT INTO unieuro.corsidilaurea
+(id, magistrale, descrizione, nome)
+VALUES(3, true, 'Il corso di laurea magistrale si propone dunque di formare professionisti, dotati di competenze analitiche e operative di alto livello, ma anche caratterizzati da una visione aperta e critica dei problemi connessi all ''adozione e all''uso delle tecnologie informatiche.', 'Informatica');
+INSERT INTO unieuro.corsidilaurea
+(id, magistrale, descrizione, nome)
+VALUES(1, false, 'Laurea triennale', 'Informatica');
+INSERT INTO unieuro.corsidilaurea
+(id, magistrale, descrizione, nome)
+VALUES(4, false, 'Il corso di lettere è in festa del perdono', 'lettere');
+INSERT INTO unieuro.corsidilaurea
+(id, magistrale, descrizione, nome)
+VALUES(5, false, 'Laurea Triennale 180 cfu', 'Informatica Musicale');
+
+
+-- studenti
+INSERT INTO unieuro.studenti
+(matricola, cdl, utente)
+VALUES(1, 1, 1);
+INSERT INTO unieuro.studenti
+(matricola, cdl, utente)
+VALUES(5, 1, 12);
+
+--segreteria
+INSERT INTO unieuro.segreteria
+(utente, indirizzo)
+VALUES(3, 'Via Celoria 18');
+
+-- docenti
+INSERT INTO unieuro.docenti
+(utente, ufficioperricevimenti)
+VALUES(2, 'Via Celoria 18 quinto piano');
+INSERT INTO unieuro.docenti
+(utente, ufficioperricevimenti)
+VALUES(4, 'Via Celoria 18 sesto piano');
+INSERT INTO unieuro.docenti
+(utente, ufficioperricevimenti)
+VALUES(5, 'Via Celoria 18 ottavo piano');
+INSERT INTO unieuro.docenti
+(utente, ufficioperricevimenti)
+VALUES(6, 'Via Celoria 18 quarto piano');
+INSERT INTO unieuro.docenti
+(utente, ufficioperricevimenti)
+VALUES(7, 'Festa del perdono, quarto piano');
+INSERT INTO unieuro.docenti
+(utente, ufficioperricevimenti)
+VALUES(8, 'Via celoria 18 sesto piano');
+INSERT INTO unieuro.docenti
+(utente, ufficioperricevimenti)
+VALUES(9, 'Via Celoria 18');
+
+
+
+-- insegnamenti
+INSERT INTO unieuro.insegnamenti
+(id, nome, anno, cfu, corsodilaurea, docente)
+VALUES(2, 'Filosofia II', 1, 12, 2, 2);
+INSERT INTO unieuro.insegnamenti
+(id, nome, anno, cfu, corsodilaurea, docente)
+VALUES(1, 'Algoritmi e strutture dati', 2, 12, 1, 2);
+INSERT INTO unieuro.insegnamenti
+(id, nome, anno, cfu, corsodilaurea, docente)
+VALUES(3, 'Programmazione I', 1, 12, 1, 5);
+INSERT INTO unieuro.insegnamenti
+(id, nome, anno, cfu, corsodilaurea, docente)
+VALUES(4, 'Programmazione II', 2, 6, 1, 4);
+INSERT INTO unieuro.insegnamenti
+(id, nome, anno, cfu, corsodilaurea, docente)
+VALUES(5, 'Programmazione 1,5', 1, 8, 1, 5);
+INSERT INTO unieuro.insegnamenti
+(id, nome, anno, cfu, corsodilaurea, docente)
+VALUES(6, 'linguaggi formali e automi', 1, 6, 1, 6);
+INSERT INTO unieuro.insegnamenti
+(id, nome, anno, cfu, corsodilaurea, docente)
+VALUES(7, 'filosofia i', 1, 12, 2, 7);
+INSERT INTO unieuro.insegnamenti
+(id, nome, anno, cfu, corsodilaurea, docente)
+VALUES(8, 'filosofia iii', 2, 12, 2, 7);
+INSERT INTO unieuro.insegnamenti
+(id, nome, anno, cfu, corsodilaurea, docente)
+VALUES(9, 'sistemi operativi i', 2, 6, 1, 8);
+INSERT INTO unieuro.insegnamenti
+(id, nome, anno, cfu, corsodilaurea, docente)
+VALUES(10, 'sistemi operativi ii', 3, 6, 1, 8);
+INSERT INTO unieuro.insegnamenti
+(id, nome, anno, cfu, corsodilaurea, docente)
+VALUES(11, 'logica matematica', 1, 12, 5, 9);
+
+-- propedeuticità
+INSERT INTO unieuro.propedeuticità
+(insegnamento, propedeuticoa)
+VALUES(3, 4);
+INSERT INTO unieuro.propedeuticità
+(insegnamento, propedeuticoa)
+VALUES(5, 4);
+INSERT INTO unieuro.propedeuticità
+(insegnamento, propedeuticoa)
+VALUES(2, 8);
+INSERT INTO unieuro.propedeuticità
+(insegnamento, propedeuticoa)
+VALUES(7, 8);
+INSERT INTO unieuro.propedeuticità
+(insegnamento, propedeuticoa)
+VALUES(9, 10);
+
+-- appelli
+INSERT INTO unieuro.appelli
+(appello_id, insegnamento_id, giorno)
+VALUES(1, 1, '2023-03-05');
+INSERT INTO unieuro.appelli
+(appello_id, insegnamento_id, giorno)
+VALUES(2, 2, '2023-02-25');
+INSERT INTO unieuro.appelli
+(appello_id, insegnamento_id, giorno)
+VALUES(3, 1, '2023-06-06');
+INSERT INTO unieuro.appelli
+(appello_id, insegnamento_id, giorno)
+VALUES(4, 4, '2023-06-23');
+INSERT INTO unieuro.appelli
+(appello_id, insegnamento_id, giorno)
+VALUES(5, 5, '2023-06-27');
+INSERT INTO unieuro.appelli
+(appello_id, insegnamento_id, giorno)
+VALUES(6, 3, '2023-07-02');
+INSERT INTO unieuro.appelli
+(appello_id, insegnamento_id, giorno)
+VALUES(7, 11, '2023-11-22');
+
+
+-- storico studenti
+INSERT INTO unieuro.storicostudenti
+(matricola, cdl, email, pswrd, nome, cognome)
+VALUES(2, 1, 'john.wick@studenti.unimi.it', 'password', 'john', 'wick');
+INSERT INTO unieuro.storicostudenti
+(matricola, cdl, email, pswrd, nome, cognome)
+VALUES(4, 4, 'morgan.freeman@studenti.unimi.it', 'password', 'morgan', 'freeman');
+INSERT INTO unieuro.storicostudenti
+(matricola, cdl, email, pswrd, nome, cognome)
+VALUES(3, 5, 'kurt.cobain@studenti.unimi.it', 'password', 'kurt', 'cobain');
+
+
+-- storico voti
+INSERT INTO unieuro.storicovoti
+(studentematricola, appello_id, voto)
+VALUES(2, 6, 15);
+INSERT INTO unieuro.storicovoti
+(studentematricola, appello_id, voto)
+VALUES(3, 7, 29);
+
+-- studentiesami
+INSERT INTO unieuro.studentiesami
+(studentematricola, appello_id, voto)
+VALUES(1, 1, 25);
+INSERT INTO unieuro.studentiesami
+(studentematricola, appello_id, voto)
+VALUES(1, 3, 27);
+INSERT INTO unieuro.studentiesami
+(studentematricola, appello_id, voto)
+VALUES(1, 5, 23);
+INSERT INTO unieuro.studentiesami
+(studentematricola, appello_id, voto)
+VALUES(1, 6, NULL);
+
+
+
+

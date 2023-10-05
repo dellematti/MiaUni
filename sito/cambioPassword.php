@@ -12,7 +12,7 @@
     <header class="header" role="banner">
         <div class="logo-container container-fluid">
             <div>
-                <a class="nav-link active" id="uni" aria-current="page" href="/">Uni<span id="euro">Euro</span></a>
+                <a class="nav-link active" id="uni" aria-current="page" href="/">Mia<span id="euro">Uni</span></a>
             </div>
         </div>
     </header>
@@ -21,7 +21,7 @@
         <div class="col-lg-4 col-md-4 col-sm-6 col-md-offset-4 col-sm-offset-3 col-lg-offset-4 colonna-centrale"
             role="main">
             <h1 class="content-block-title clearfix" id="main-content">
-                Autenticazione</h1>
+                Cambio password</h1>
             <br>
                 <form method="POST" action="../scripts/cambioPassword.php">
                     <div class="form-group " >
@@ -53,10 +53,9 @@
                 </li>
             </ul>
         </nav>
-        <p class="firma">Università degli studi di Milano</p>
-        <address>Via Celoria 18 - 20122 Milano</address>
+        <p class="firma">Università degli studi di Informatica</p>
         <p>
-            <a href="#">Assistenza uniEuro</a>
+            <a href="#">Assistenza MiaUni</a>
         </p>
     </footer>
 </body>

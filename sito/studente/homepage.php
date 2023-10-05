@@ -32,7 +32,7 @@
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0"> 
                     <li class="nav-item">
-                        <a class="nav-link active" id="uni" aria-current="page" href="/">Uni<span id ="euro">Euro</span></a>
+                        <a class="nav-link active" id="uni" aria-current="page" href="/">Mia<span id ="euro">Uni</span></a>
                     </li>
                 </ul>
             </div>
@@ -54,7 +54,7 @@
                                     <div class="card cardSelezionabile bg p-3 h-100">
                                         <div class="card-body">
                                             <h5 class="card-title">Iscrizione esami</h5>
-                                            <img class="card-img    bg" src="https://prog2.di.unimi.it/_images/prog2.png" alt="Card image cap">
+                                            <img class="card-img    bg" src="http://localhost/unimia/img/prog2.png" alt="Card image cap">
                                             <a id="albumLink" class="stretched-link" title="Click to do something"
                                                 href="iscrizioneEsami.php" action="risultati" method="GET">
                                             </a>
@@ -65,7 +65,7 @@
                                     <div class="card cardSelezionabile bg p-3 h-100">
                                         <div class="card-body">
                                             <h5 class="card-title">La mia carriera</h5>
-                                            <img class="card-img    bg" src="https://www.vigilanzatv.it/wp-content/uploads/2021/01/The-Truman-Show-2.jpg" alt="Card image cap">
+                                            <img class="card-img    bg" src="http://localhost/unimia/img/school.png"  width="40" height="300" alt="Card image cap">
                                             <a id="carriera" class="stretched-link" title="Carriera"
                                                 href="carriera.php" >
                                             </a>
@@ -92,7 +92,7 @@
 
 
                             </div>
-                    <a href="./corsiDiLaurea.php" class="btn btn-primary btn-lg  top-buffer"  >Tutti i corsi di laurea dell ateneo </a>
+                    <a href="http://localhost/unimia/sito/corsiDiLaurea.php" class="btn btn-primary btn-lg  top-buffer"  >Tutti i corsi di laurea dell ateneo </a>
                 </div>
             </div>
 

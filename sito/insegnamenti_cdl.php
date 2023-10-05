@@ -10,8 +10,10 @@
 
     <!-- ora che l homepage è dentro la cartella, per recuperare il css metto tutto il path -->
     <link href="http://localhost/unimia/css/cssMio.css" rel="stylesheet">
+    <link href="http://localhost/unimia/css/cssMio.css" rel="stylesheet">
 
 </head>
+
 
 
 <body>
@@ -24,7 +26,7 @@
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0"> 
                     <li class="nav-item">
-                        <a class="nav-link active" id="uni" aria-current="page" href="/">Uni<span id ="euro">Euro</span></a>
+                        <a class="nav-link active" id="uni" aria-current="page" href="/">Mia<span id ="euro">Uni</span></a>
                     </li>
                 </ul>
             </div>
@@ -32,40 +34,44 @@
     </nav>
 
 
+
+
     <div class="main-content">
         <div class="container pt-4 mt-5">
             <div class="row justify-content-between">
-                <h1>Corsi di laurea dell ateneo</h1>
-                <p>Tutti i corsi di laurea erogati dall ateneo
+                <h1>Insegnamenti del corso di laurea</h1>
                 <div class="row top-buffer right-buffer" id="">
 
                 <table>
                     <tr>
                         <th>Corso di laurea</th>
-                        <th>Tipo laurea</th>
-                        <th>Descrizione</th>
+                        <th>Cfu</th>
+                        <th>Docente</th>
+                        <th>Email docente</th>
                     </tr>
                     <?php
                         session_start();
                         require 'C:\xampp\htdocs\unimia\scripts\connessioneDatabase2.php';
+                        if(isset($_GET['cdl']) ){    // prendo dal url l id del cdl
+                            $cdl = $_GET['cdl'];
+                        }
                         $dbConnect = openConnection();
-
-                        $query = " SELECT * FROM unieuro.get_corsi_di_laurea()"; 
+                        
+                        $query = "select * from  unieuro.get_informazioni_cdl($1)"; 
                         $res = pg_prepare($dbConnect, "", $query);
-                        $row = pg_fetch_all(pg_execute($dbConnect, "", array( )));
+                        $row = pg_fetch_all(pg_execute($dbConnect, "", array($cdl )));
 
+                                            
                         foreach($row as $cdl)  {
+                            // <td>',$cdl['nome'],'</td>
                             echo '<tr>
-                            <td><a href="insegnamenti_cdl.php?cdl=',$cdl['id']   ,'">', $cdl['nome'],'</a></td>
-                            <td>';
-                            if ($cdl['magistrale'] == 'f')    // non è di tipo boolean ma è una string 'f' o 't', passare a boolean
-                                echo'triennale';
-                            else echo'magistrale';
-                            
-                            echo'</td>
-                            <td>',$cdl['descrizione'],'</td>
-                            </tr>';
-                        }  
+                            <td><a href="insegnamento.php?insegnamento=',$cdl['id']   ,'">', $cdl['nome'],'</a></td>
+                            <td>',$cdl['cfu'],'</td>
+                            <td>',$cdl['docente_nome']." ".$cdl['docente_cognome'],'</td>
+                            <td>',$cdl['email'],'</td>
+                            </tr><br>';
+                        }   
+                        // si potrebbe aggiungere la pagina di informazioni del docente, clicco sul nome e si apre la pagina
 
                     ?>
                 </table>
@@ -73,4 +79,6 @@
             </div>
         </div>
     </div>
+
+
 </body>

@@ -52,12 +52,12 @@
                                 <div class="col-lg-4 col-md-4 col-sm-6 col-md-offset-4 col-sm-offset-3 col-lg-offset-4 colonna-centrale"
                                     role="main">
                                     <h1 class="content-block-title clearfix" id="main-content">
-                                        Rimuovi utente</h1>
+                                        Modifica utente</h1>
                                     <br>
                                         <!-- <form method="POST" action="localhost/unimia/scripts/aggiungiUtente.php"> -->
-                                        <form method="POST" action="http://localhost/unimia/scripts/segreteria/rimuoviUtente.php">
+                                        <form method="POST" action="http://localhost/unimia/scripts/segreteria/modificaUtente.php">
                                             <div class="form-group" >
-                                                <p>Selezionare utente da cancellare (studenti o docenti) : </p>
+                                                <p>Selezionare utente da modificare (studenti o docenti) : </p>
                                                 <input list="utente" name="utente" class="form-control input-lg typeahead top-buffer-s">
                                                     <datalist id="utente" >
                                                         <?php
@@ -75,7 +75,28 @@
                                                         ?>    
                                                     </datalist>
                                                 <br>
-                                                <button type="submit" class="btn btn-primary btn-lg btn-block">Rimuovi</button>
+                                                <p>Se si vuole modificare il nome utente, inserire qua il nuovo nome </p>
+                                                <input id="nome"  class="form-control input-lg typeahead top-buffer-s" name="nome" type="text" class="form-control bg-transparent rounded-0 my-4" placeholder="Nome" 
+                                                aria-label="Nome" value="" aria-describedby="basic-addon1">
+                                                <br>
+                                                <p>Se si vuole modificare il cognome utente, inserire qua il nuovo cognome </p>
+                                                <input id="cognome"  class="form-control input-lg typeahead top-buffer-s" name="cognome" type="text" class="form-control bg-transparent rounded-0 my-4" placeholder="Cognome" 
+                                                    aria-label="Cognome" value="" aria-describedby="basic-addon1">
+                                                <br>
+                                                <p>Se si vuole modificare l' email dell utente, inserirla qui </p>
+                                                <input id="email"  class="form-control input-lg typeahead top-buffer-s" name="email" type="text" class="form-control bg-transparent rounded-0 my-4" placeholder="Email" 
+                                                    aria-label="Email" value="" aria-describedby="basic-addon1">
+                                                <br>
+                                                <p>Se si vuole modificare la password dell' utente, inserire qua la nuova (utile se l utente dimentica la precedente) </p>
+                                                <!-- in un sito vero verrebbe generata automaticamente e inviata all utente -->
+                                                <input id="password"  class="form-control input-lg typeahead top-buffer-s" name="password" type="password" class="form-control bg-transparent rounded-0 my-4" placeholder="Password" 
+                                                    aria-label="Password" value="" aria-describedby="basic-addon1">
+                                                <br>
+
+                                                <!-- potrei aggiungere anche la modifica del cdl, o indirizzo e in generale attributi di studednti docenti etc.. -->
+
+
+                                                <button type="submit" class="btn btn-primary btn-lg btn-block">Modifica</button>
                                             </div>
                                         </form>
                                 </div>

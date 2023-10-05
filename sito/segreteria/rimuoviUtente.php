@@ -29,7 +29,7 @@
                 <div class="collapse navbar-collapse" id="navbarNavDropdown">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0"> 
                         <li class="nav-item">
-                            <a class="nav-link active" id="uni" aria-current="page" href="/">Uni<span id ="euro">Euro</span></a>
+                            <a class="nav-link active" id="uni" aria-current="page" href="/">Mia<span id ="euro">Uni</span></a>
                         </li>
                     </ul>
                 </div>
@@ -57,16 +57,18 @@
                                         <!-- <form method="POST" action="localhost/unimia/scripts/aggiungiUtente.php"> -->
                                         <form method="POST" action="http://localhost/unimia/scripts/segreteria/rimuoviUtente.php">
                                             <div class="form-group" >
-                                                <p>Selezionare utente da cancellare (studenti o docenti) : </p>
+                                                <p>Selezionare utente da cancellare  : </p>
                                                 <input list="utente" name="utente" class="form-control input-lg typeahead top-buffer-s">
                                                     <datalist id="utente" >
                                                         <?php
                                                             require 'C:\xampp\htdocs\unimia\scripts\connessioneDatabase2.php';
                                                             $dbConnect = openConnection();
                                                             // $query = "select * from unieuro.get_utenti()";
-                                                            $query = "select * from unieuro.get_utenti_non_segreteria()";
+                                                            // $res = pg_prepare($dbConnect, "", $query);
+                                                            // $row = pg_fetch_all(pg_execute($dbConnect, "",array() )); // non riceve nessun parametro in ingresso
+                                                            $query = "select * from unieuro.get_altri_utenti($1)";
                                                             $res = pg_prepare($dbConnect, "", $query);
-                                                            $row = pg_fetch_all(pg_execute($dbConnect, "",array() )); // non riceve nessun parametro in ingresso
+                                                            $row = pg_fetch_all(pg_execute($dbConnect, "",array($_SESSION['utente']) )); // non riceve nessun parametro in ingresso
 
 
                                                             foreach($row as $studente) {  

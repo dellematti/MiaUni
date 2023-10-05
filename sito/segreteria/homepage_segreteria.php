@@ -32,7 +32,7 @@
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0"> 
                     <li class="nav-item">
-                        <a class="nav-link active" id="uni" aria-current="page" href="/">Uni<span id ="euro">Euro</span></a>
+                        <a class="nav-link active" id="uni" aria-current="page" href="/">Mia<span id ="euro">Uni</span></a>
                     </li>
                 </ul>
             </div>
@@ -96,6 +96,8 @@
                                     </div>
                                 </div>
                             </div>
+                            <a href="http://localhost/unimia/sito/corsiDiLaurea.php" class="btn btn-primary btn-lg  top-buffer"  >Tutti i corsi di laurea dell ateneo </a>
+
                         </div>
                 </div>
             </div>
