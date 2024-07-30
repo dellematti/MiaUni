@@ -201,8 +201,7 @@ Il database offre diverse funzioni e procedure:
   Correttezza del calendario d’esame. Non `e possibile programmare, nella stessa giornata, appelli per più esami dello stesso anno di un corso di laurea.
 
 ### Applicazione web
-Il sito è realizzato con PHP HTML CSS e JavaScript, il suo scopo è quello di poter interagire comodamente con il database utilizzando le funzioni 
-offerte.\
+È presente una semplice applicazione web realizzata con PHP HTML CSS e JavaScript, il suo scopo è quello di poter interagire comodamente con il database utilizzando le funzioni offerte.\
 All' avvio si trova una pagina di login. Una volta fatto l accesso, in base al dominio utilizzato, si viene indirizzati all' homepage del tipo utente
 indicato dal dominio. Alcune informazioni utili come il tipo utente e l'id dell utente vengono salvate durante il login nelle variabili di sessione.\
 Le varie homepage hanno card cliccabili che rappresentano le varie funzioni di cui l' utente può usufruire. Cliccandoci si verrà rimandati a pagine
